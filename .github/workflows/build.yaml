@@ -53,28 +53,41 @@ jobs:
           echo "${{ secrets.ZOT_PASSWORD }}" | docker login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" --password-stdin
           crane auth login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" -p "${{ secrets.ZOT_PASSWORD }}"
 
-      - name: Debug - compare working vs built manifests
+      - name: Build amd64 (native)
         run: |
           set -e
-          echo "=== Working manifest (busybox via crane copy) ==="
-          crane copy busybox:latest "${REGISTRY}/${IMAGE}:test-canary"
-          crane manifest "${REGISTRY}/${IMAGE}:test-canary" | jq .
-
-          echo "=== Building our image ==="
           docker build -t local-workspace:amd64 -f Dockerfile.workspace .
           docker save local-workspace:amd64 -o amd64.tar
 
-          echo "=== Our image manifest (from docker save) ==="
-          mkdir -p debug && tar xf amd64.tar -C debug
-          cat debug/manifest.json | jq .
-          CONFIG=$(cat debug/manifest.json | jq -r '.[0].Config')
-          echo "=== Our image config ==="
-          cat "debug/$CONFIG" | jq .
-
-      - name: Push with skopeo (handles format conversion)
+      - name: Build arm64 (QEMU)
         run: |
           set -e
-          skopeo copy \
-            docker-archive:amd64.tar \
-            docker://${REGISTRY}/${IMAGE}:build-amd64 \
-            --dest-creds "${{ secrets.ZOT_USERNAME }}:${{ secrets.ZOT_PASSWORD }}"
+          docker buildx build \
+            --builder multiarch \
+            --platform linux/arm64 \
+            --provenance=false \
+            --sbom=false \
+            --output "type=docker,dest=arm64.tar" \
+            -f Dockerfile.workspace .
+
+      - name: Push per-arch images with skopeo
+        run: |
+          set -e
+          CREDS="${{ secrets.ZOT_USERNAME }}:${{ secrets.ZOT_PASSWORD }}"
+          for ARCH in amd64 arm64; do
+            skopeo copy \
+              "docker-archive:${ARCH}.tar" \
+              "docker://${REGISTRY}/${IMAGE}:build-${ARCH}" \
+              --dest-creds "$CREDS"
+          done
+
+      - name: Create and push multi-arch manifest
+        run: |
+          set -e
+          IFS=',' read -ra TAG_LIST <<< "${{ steps.tags.outputs.tags }}"
+          for TAG in "${TAG_LIST[@]}"; do
+            crane index append \
+              --manifest "${REGISTRY}/${IMAGE}:build-amd64" \
+              --manifest "${REGISTRY}/${IMAGE}:build-arm64" \
+              --tag "$TAG"
+          done
