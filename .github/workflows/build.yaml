@@ -53,44 +53,28 @@ jobs:
           echo "${{ secrets.ZOT_PASSWORD }}" | docker login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" --password-stdin
           crane auth login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" -p "${{ secrets.ZOT_PASSWORD }}"
 
-      - name: Test registry accepts images
-        run: crane copy busybox:latest "${REGISTRY}/${IMAGE}:test-canary"
-
-      - name: Build amd64 with docker (native)
-        run: docker build -t "${REGISTRY}/${IMAGE}:build-amd64" -f Dockerfile.workspace .
-
-      - name: Inspect built image manifest
+      - name: Debug - compare working vs built manifests
         run: |
-          docker save "${REGISTRY}/${IMAGE}:build-amd64" -o debug.tar
-          mkdir -p debug && tar xf debug.tar -C debug
-          echo "=== manifest.json ===" && cat debug/manifest.json | jq .
+          set -e
+          echo "=== Working manifest (busybox via crane copy) ==="
+          crane copy busybox:latest "${REGISTRY}/${IMAGE}:test-canary"
+          crane manifest "${REGISTRY}/${IMAGE}:test-canary" | jq .
+
+          echo "=== Building our image ==="
+          docker build -t local-workspace:amd64 -f Dockerfile.workspace .
+          docker save local-workspace:amd64 -o amd64.tar
+
+          echo "=== Our image manifest (from docker save) ==="
+          mkdir -p debug && tar xf amd64.tar -C debug
+          cat debug/manifest.json | jq .
           CONFIG=$(cat debug/manifest.json | jq -r '.[0].Config')
-          echo "=== image config ===" && cat "debug/$CONFIG" | jq .
+          echo "=== Our image config ==="
+          cat "debug/$CONFIG" | jq .
 
-      - name: Push amd64 with docker
-        run: docker push "${REGISTRY}/${IMAGE}:build-amd64"
-
-      - name: Build arm64 with buildx
+      - name: Push with skopeo (handles format conversion)
         run: |
           set -e
-          docker buildx build \
-            --builder multiarch \
-            --platform linux/arm64 \
-            --provenance=false \
-            --sbom=false \
-            --output "type=docker,dest=arm64.tar" \
-            -f Dockerfile.workspace .
-
-      - name: Push arm64 with crane
-        run: crane push arm64.tar "${REGISTRY}/${IMAGE}:build-arm64"
-
-      - name: Create and push multi-arch manifest
-        run: |
-          set -e
-          IFS=',' read -ra TAG_LIST <<< "${{ steps.tags.outputs.tags }}"
-          for TAG in "${TAG_LIST[@]}"; do
-            crane index append \
-              --manifest "${REGISTRY}/${IMAGE}:build-amd64" \
-              --manifest "${REGISTRY}/${IMAGE}:build-arm64" \
-              --tag "$TAG"
-          done
+          skopeo copy \
+            docker-archive:amd64.tar \
+            docker://${REGISTRY}/${IMAGE}:build-amd64 \
+            --dest-creds "${{ secrets.ZOT_USERNAME }}:${{ secrets.ZOT_PASSWORD }}"
