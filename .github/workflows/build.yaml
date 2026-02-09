@@ -53,25 +53,27 @@ jobs:
           echo "${{ secrets.ZOT_PASSWORD }}" | docker login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" --password-stdin
           crane auth login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" -p "${{ secrets.ZOT_PASSWORD }}"
 
-      - name: Build per-arch images
+      - name: Build amd64 with docker (native)
         run: |
           set -e
-          for ARCH in amd64 arm64; do
-            docker buildx build \
-              --builder multiarch \
-              --platform "linux/${ARCH}" \
-              --provenance=false \
-              --sbom=false \
-              --output "type=docker,dest=${ARCH}.tar" \
-              -f Dockerfile.workspace .
-          done
+          docker build -t "${REGISTRY}/${IMAGE}:build-amd64" -f Dockerfile.workspace .
 
-      - name: Push per-arch images with crane
+      - name: Push amd64 with docker
+        run: docker push "${REGISTRY}/${IMAGE}:build-amd64"
+
+      - name: Build arm64 with buildx
         run: |
           set -e
-          for ARCH in amd64 arm64; do
-            crane push "${ARCH}.tar" "${REGISTRY}/${IMAGE}:build-${ARCH}"
-          done
+          docker buildx build \
+            --builder multiarch \
+            --platform linux/arm64 \
+            --provenance=false \
+            --sbom=false \
+            --output "type=docker,dest=arm64.tar" \
+            -f Dockerfile.workspace .
+
+      - name: Push arm64 with crane
+        run: crane push arm64.tar "${REGISTRY}/${IMAGE}:build-arm64"
 
       - name: Create and push multi-arch manifest
         run: |
