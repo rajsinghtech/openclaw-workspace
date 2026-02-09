@@ -62,7 +62,7 @@ jobs:
               --platform "linux/${ARCH}" \
               --provenance=false \
               --sbom=false \
-              --output "type=oci,dest=${ARCH}.tar" \
+              --output "type=docker,dest=${ARCH}.tar" \
               -f Dockerfile.workspace .
           done
 
