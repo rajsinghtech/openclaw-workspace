@@ -53,10 +53,19 @@ jobs:
           echo "${{ secrets.ZOT_PASSWORD }}" | docker login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" --password-stdin
           crane auth login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" -p "${{ secrets.ZOT_PASSWORD }}"
 
+      - name: Test registry accepts images
+        run: crane copy busybox:latest "${REGISTRY}/${IMAGE}:test-canary"
+
       - name: Build amd64 with docker (native)
+        run: docker build -t "${REGISTRY}/${IMAGE}:build-amd64" -f Dockerfile.workspace .
+
+      - name: Inspect built image manifest
         run: |
-          set -e
-          docker build -t "${REGISTRY}/${IMAGE}:build-amd64" -f Dockerfile.workspace .
+          docker save "${REGISTRY}/${IMAGE}:build-amd64" -o debug.tar
+          mkdir -p debug && tar xf debug.tar -C debug
+          echo "=== manifest.json ===" && cat debug/manifest.json | jq .
+          CONFIG=$(cat debug/manifest.json | jq -r '.[0].Config')
+          echo "=== image config ===" && cat "debug/$CONFIG" | jq .
 
       - name: Push amd64 with docker
         run: docker push "${REGISTRY}/${IMAGE}:build-amd64"
