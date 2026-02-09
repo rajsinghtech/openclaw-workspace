@@ -1,35 +1,50 @@
 FROM alpine:3.21 AS tools
 ARG TARGETARCH
 
-RUN apk add --no-cache curl tar \
- && mkdir -p /out/bin \
- # kubectl
- && V=$(curl -fsSL https://dl.k8s.io/release/stable.txt) \
- && curl -fsSL -o /out/bin/kubectl "https://dl.k8s.io/release/$V/bin/linux/${TARGETARCH}/kubectl" \
- # flux
- && V=$(curl -sI "https://github.com/fluxcd/flux2/releases/latest" | grep -i ^location: | grep -oE '[^/]+$' | tr -d '\r\n') \
+RUN apk add --no-cache curl tar && mkdir -p /out/bin
+
+# kubectl
+RUN V=$(curl -fsSL --retry 3 https://dl.k8s.io/release/stable.txt) \
+ && curl -fsSL --retry 3 -o /out/bin/kubectl \
+    "https://dl.k8s.io/release/$V/bin/linux/${TARGETARCH}/kubectl" \
+ && chmod +x /out/bin/kubectl
+
+# flux
+RUN V=$(curl -fsSL --retry 3 -o /dev/null -w '%{redirect_url}' "https://github.com/fluxcd/flux2/releases/latest" | grep -oE '[^/]+$') \
  && VNUM=${V#v} \
- && curl -fsSL "https://github.com/fluxcd/flux2/releases/download/${V}/flux_${VNUM}_linux_${TARGETARCH}.tar.gz" \
+ && curl -fsSL --retry 3 "https://github.com/fluxcd/flux2/releases/download/${V}/flux_${VNUM}_linux_${TARGETARCH}.tar.gz" \
     | tar xz -C /out/bin flux \
- # helm
- && V=$(curl -sI "https://github.com/helm/helm/releases/latest" | grep -i ^location: | grep -oE '[^/]+$' | tr -d '\r\n') \
- && curl -fsSL "https://get.helm.sh/helm-${V}-linux-${TARGETARCH}.tar.gz" \
+ && chmod +x /out/bin/flux
+
+# helm
+RUN V=$(curl -fsSL --retry 3 -o /dev/null -w '%{redirect_url}' "https://github.com/helm/helm/releases/latest" | grep -oE '[^/]+$') \
+ && curl -fsSL --retry 3 "https://get.helm.sh/helm-${V}-linux-${TARGETARCH}.tar.gz" \
     | tar xz -C /tmp \
  && mv /tmp/linux-${TARGETARCH}/helm /out/bin/ \
- # kustomize
- && V=$(curl -sI "https://github.com/kubernetes-sigs/kustomize/releases/latest" | grep -i ^location: | grep -oE '[^/]+$' | tr -d '\r\n') \
- && VNUM=${V#kustomize/} \
- && curl -fsSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${VNUM}/kustomize_${VNUM}_linux_${TARGETARCH}.tar.gz" \
+ && chmod +x /out/bin/helm
+
+# kustomize
+RUN V=$(curl -fsSL --retry 3 "https://api.github.com/repos/kubernetes-sigs/kustomize/releases?per_page=30" \
+    | grep -m1 '"tag_name": "kustomize/' | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+') \
+ && curl -fsSL --retry 3 "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${V}/kustomize_${V}_linux_${TARGETARCH}.tar.gz" \
     | tar xz -C /out/bin \
- # yq
- && curl -fsSL -o /out/bin/yq "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${TARGETARCH}" \
- # sops
- && V=$(curl -sI "https://github.com/getsops/sops/releases/latest" | grep -i ^location: | grep -oE '[^/]+$' | tr -d '\r\n') \
- && curl -fsSL -o /out/bin/sops "https://github.com/getsops/sops/releases/download/${V}/sops-${V}.linux.${TARGETARCH}" \
- # jq
- && curl -fsSL -o /out/bin/jq "https://github.com/jqlang/jq/releases/latest/download/jq-linux-${TARGETARCH}" \
- # set executable
- && chmod +x /out/bin/*
+ && chmod +x /out/bin/kustomize
+
+# yq
+RUN curl -fsSL --retry 3 -o /out/bin/yq \
+    "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${TARGETARCH}" \
+ && chmod +x /out/bin/yq
+
+# sops
+RUN V=$(curl -fsSL --retry 3 -o /dev/null -w '%{redirect_url}' "https://github.com/getsops/sops/releases/latest" | grep -oE '[^/]+$') \
+ && curl -fsSL --retry 3 -o /out/bin/sops \
+    "https://github.com/getsops/sops/releases/download/${V}/sops-${V}.linux.${TARGETARCH}" \
+ && chmod +x /out/bin/sops
+
+# jq
+RUN curl -fsSL --retry 3 -o /out/bin/jq \
+    "https://github.com/jqlang/jq/releases/latest/download/jq-linux-${TARGETARCH}" \
+ && chmod +x /out/bin/jq
 
 FROM scratch
 COPY --from=tools /out/bin/ /bin/
