@@ -1,4 +1,4 @@
-name: Build & Push OCI Images
+name: Build & Push Workspace Image
 
 on:
   push:
@@ -8,45 +8,46 @@ on:
 
 env:
   REGISTRY: oci.killinit.cc
-  WORKSPACE_IMAGE: openclaw/workspace
+  IMAGE: openclaw/workspace
+
 jobs:
-  build-workspace:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@v4
 
-      - uses: docker/setup-qemu-action@v3
-
-      - uses: docker/setup-buildx-action@v3
-
-      - uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.ZOT_USERNAME }}
-          password: ${{ secrets.ZOT_PASSWORD }}
+      - name: Set up QEMU
+        run: docker run --privileged --rm tonistiigi/binfmt --install all
 
       - name: Compute tags
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.WORKSPACE_IMAGE }}
-          tags: |
-            type=sha,prefix=
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=raw,value=latest,enable={{is_default_branch}}
+        id: tags
+        run: |
+          SHA=$(echo "$GITHUB_SHA" | cut -c1-7)
+          TAGS="${REGISTRY}/${IMAGE}:${SHA}"
 
-      - uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile.workspace
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          provenance: false
-          sbom: false
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/}"
+            TAGS="${TAGS},${REGISTRY}/${IMAGE}:${VERSION}"
+          elif [[ "$GITHUB_REF" == refs/heads/main ]]; then
+            TAGS="${TAGS},${REGISTRY}/${IMAGE}:latest,${REGISTRY}/${IMAGE}:main"
+          else
+            BRANCH="${GITHUB_REF#refs/heads/}"
+            BRANCH="${BRANCH//\//-}"
+            TAGS="${TAGS},${REGISTRY}/${IMAGE}:${BRANCH}"
+          fi
+
+          echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
+
+      - name: Login to registry
+        run: echo "${{ secrets.ZOT_PASSWORD }}" | docker login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" --password-stdin
+
+      - name: Build and push
+        run: |
+          docker buildx create --use
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --provenance=false \
+            --sbom=false \
+            $(echo "${{ steps.tags.outputs.tags }}" | tr ',' '\n' | sed 's/^/-t /') \
+            --push \
+            -f Dockerfile.workspace .
