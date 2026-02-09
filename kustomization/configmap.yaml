@@ -1,0 +1,119 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openclaw-config
+data:
+  openclaw.json: |
+    {
+      "gateway": {
+        "port": 18789,
+        "mode": "local",
+        "bind": "lan",
+        "auth": {
+          "mode": "token",
+          "allowTailscale": true
+        },
+        "controlUi": {
+          "enabled": true,
+          "allowInsecureAuth": true
+        }
+      },
+      "models": {
+        "mode": "merge",
+        "providers": {
+          "llama-cpp": {
+            "baseUrl": "http://stpetersburg-llama-cpp/v1",
+            "apiKey": "unused",
+            "api": "openai-completions",
+            "models": [
+              {
+                "id": "Qwen3-Coder-Next",
+                "name": "Qwen3 Coder Next",
+                "input": ["text"],
+                "contextWindow": 131072,
+                "maxTokens": 8192
+              }
+            ]
+          }
+        }
+      },
+      "agents": {
+        "defaults": {
+          "workspace": "/home/node/.openclaw/workspace",
+          "model": {
+            "primary": "llama-cpp/Qwen3-Coder-Next"
+          },
+          "userTimezone": "America/New_York",
+          "timeoutSeconds": 600,
+          "maxConcurrent": 1,
+          "subagents": {
+            "maxConcurrent": 8
+          }
+        },
+        "list": [
+          {
+            "id": "main",
+            "default": true,
+            "identity": {
+              "name": "OpenClaw",
+              "emoji": "🦞"
+            },
+            "model": {
+              "primary": "llama-cpp/Qwen3-Coder-Next"
+            },
+            "subagents": {
+              "allowAgents": ["claw-manager"]
+            }
+          },
+          {
+            "id": "claw-manager",
+            "identity": {
+              "name": "Claw Manager",
+              "emoji": "🦞"
+            },
+            "model": {
+              "primary": "llama-cpp/Qwen3-Coder-Next"
+            },
+            "subagents": {
+              "allowAgents": ["*"]
+            }
+          }
+        ]
+      },
+      "session": {
+        "scope": "per-sender",
+        "idleMinutes": 60
+      },
+      "logging": {
+        "level": "info",
+        "consoleStyle": "compact",
+        "redactSensitive": "tools"
+      },
+      "tools": {
+        "profile": "full",
+        "web": {
+          "search": {
+            "enabled": false
+          },
+          "fetch": {
+            "enabled": true
+          }
+        }
+      },
+      "channels": {
+        "discord": {
+          "enabled": true,
+          "groupPolicy": "open",
+          "guilds": {
+            "*": {
+              "requireMention": false
+            }
+          },
+          "dm": {
+            "policy": "pairing"
+          },
+          "configWrites": true
+        }
+      }
+    }

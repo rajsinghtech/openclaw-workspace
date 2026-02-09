@@ -1,0 +1,16 @@
+# OpenClaw main image
+#
+# CI clones the upstream repo and builds using its Dockerfile directly.
+# This file serves as a fallback/override point for customizations.
+#
+# To use upstream directly (default CI behavior):
+#   The build-openclaw job clones github.com/openclaw/openclaw and builds
+#   with its Dockerfile, tagging the result for the private registry.
+#
+# To customize, uncomment and modify:
+# FROM ghcr.io/openclaw/openclaw:latest
+# COPY custom-patches/ /app/patches/
+# RUN cd /app && npm run apply-patches
+
+ARG UPSTREAM_REF=main
+FROM ghcr.io/openclaw/openclaw:latest

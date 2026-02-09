@@ -1,0 +1,36 @@
+FROM alpine:3.21 AS tools
+ARG TARGETARCH
+
+RUN apk add --no-cache curl tar \
+ && mkdir -p /out/bin \
+ # kubectl
+ && V=$(curl -fsSL https://dl.k8s.io/release/stable.txt) \
+ && curl -fsSL -o /out/bin/kubectl "https://dl.k8s.io/release/$V/bin/linux/${TARGETARCH}/kubectl" \
+ # flux
+ && V=$(curl -sI "https://github.com/fluxcd/flux2/releases/latest" | grep -i ^location: | grep -oE '[^/]+$' | tr -d '\r\n') \
+ && VNUM=${V#v} \
+ && curl -fsSL "https://github.com/fluxcd/flux2/releases/download/${V}/flux_${VNUM}_linux_${TARGETARCH}.tar.gz" \
+    | tar xz -C /out/bin flux \
+ # helm
+ && V=$(curl -sI "https://github.com/helm/helm/releases/latest" | grep -i ^location: | grep -oE '[^/]+$' | tr -d '\r\n') \
+ && curl -fsSL "https://get.helm.sh/helm-${V}-linux-${TARGETARCH}.tar.gz" \
+    | tar xz -C /tmp \
+ && mv /tmp/linux-${TARGETARCH}/helm /out/bin/ \
+ # kustomize
+ && V=$(curl -sI "https://github.com/kubernetes-sigs/kustomize/releases/latest" | grep -i ^location: | grep -oE '[^/]+$' | tr -d '\r\n') \
+ && VNUM=${V#kustomize/} \
+ && curl -fsSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${VNUM}/kustomize_${VNUM}_linux_${TARGETARCH}.tar.gz" \
+    | tar xz -C /out/bin \
+ # yq
+ && curl -fsSL -o /out/bin/yq "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${TARGETARCH}" \
+ # sops
+ && V=$(curl -sI "https://github.com/getsops/sops/releases/latest" | grep -i ^location: | grep -oE '[^/]+$' | tr -d '\r\n') \
+ && curl -fsSL -o /out/bin/sops "https://github.com/getsops/sops/releases/download/${V}/sops-${V}.linux.${TARGETARCH}" \
+ # jq
+ && curl -fsSL -o /out/bin/jq "https://github.com/jqlang/jq/releases/latest/download/jq-linux-${TARGETARCH}" \
+ # set executable
+ && chmod +x /out/bin/*
+
+FROM scratch
+COPY --from=tools /out/bin/ /bin/
+COPY workspace/ /workspace/
