@@ -47,7 +47,7 @@ spec:
               readOnly: true
       containers:
         - name: main
-          image: ghcr.io/alpine/openclaw:2026.2.6
+          image: ghcr.io/openclaw/openclaw:2026.2.6
           env:
             - name: PATH
               value: /home/node/.openclaw/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
