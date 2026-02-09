@@ -1,0 +1,62 @@
+name: Build & Push Workspace Image
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "workspace/**"
+      - "Dockerfile.workspace"
+      - ".github/workflows/build-workspace.yaml"
+  workflow_dispatch:
+
+env:
+  REGISTRY: oci.killinit.cc
+  IMAGE: openclaw/workspace
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install crane
+        run: |
+          set -e
+          V=$(curl -fsSL https://api.github.com/repos/google/go-containerregistry/releases/latest | jq -r .tag_name)
+          curl -fsSL "https://github.com/google/go-containerregistry/releases/download/${V}/go-containerregistry_Linux_x86_64.tar.gz" \
+            | tar xz -C /usr/local/bin crane
+
+      - name: Compute tags
+        id: tags
+        run: |
+          SHA=$(echo "$GITHUB_SHA" | cut -c1-7)
+          TAGS="${REGISTRY}/${IMAGE}:${SHA},${REGISTRY}/${IMAGE}:latest"
+          echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
+
+      - name: Login to registry
+        run: |
+          echo "${{ secrets.ZOT_PASSWORD }}" | docker login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" --password-stdin
+          crane auth login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" -p "${{ secrets.ZOT_PASSWORD }}"
+
+      - name: Build workspace image
+        run: |
+          set -e
+          docker build -t local-workspace:amd64 -f Dockerfile.workspace .
+          docker save local-workspace:amd64 -o amd64.tar
+
+      - name: Push with skopeo
+        run: |
+          set -e
+          CREDS="${{ secrets.ZOT_USERNAME }}:${{ secrets.ZOT_PASSWORD }}"
+          skopeo copy \
+            "docker-archive:amd64.tar" \
+            "docker://${REGISTRY}/${IMAGE}:build-amd64" \
+            --dest-creds "$CREDS"
+
+      - name: Tag image
+        run: |
+          set -e
+          IFS=',' read -ra TAG_LIST <<< "${{ steps.tags.outputs.tags }}"
+          for TAG in "${TAG_LIST[@]}"; do
+            crane tag "${REGISTRY}/${IMAGE}:build-amd64" "${TAG##*:}"
+          done

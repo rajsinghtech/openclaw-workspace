@@ -36,21 +36,18 @@ spec:
             - |
               set -e
               echo "[init-workspace] Copying workspace template..."
-              cp -a /opt/workspace-base/bin /home/node/.openclaw/bin
-              cp -a /opt/workspace-base/workspace /home/node/.openclaw/workspace
+              cp -a /opt/workspace/workspace /home/node/.openclaw/workspace
               echo "[init-workspace] Done"
           volumeMounts:
             - name: data
               mountPath: /home/node/.openclaw
-            - name: workspace-base
-              mountPath: /opt/workspace-base
+            - name: workspace
+              mountPath: /opt/workspace
               readOnly: true
       containers:
         - name: main
-          image: ghcr.io/openclaw/openclaw:2026.2.6
+          image: oci.killinit.cc/openclaw/openclaw:latest
           env:
-            - name: PATH
-              value: /home/node/.openclaw/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
             - name: CLAWDBOT_STATE_DIR
               value: /home/node/.openclaw
           envFrom:
@@ -92,7 +89,7 @@ spec:
       volumes:
         - name: data
           emptyDir: {}
-        - name: workspace-base
+        - name: workspace
           image:
             reference: oci.killinit.cc/openclaw/workspace:latest
             pullPolicy: Always

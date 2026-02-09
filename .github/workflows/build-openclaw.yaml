@@ -1,14 +1,16 @@
-name: Build & Push Workspace Image
+name: Build & Push OpenClaw Image
 
 on:
   push:
-    branches: ["main", "**"]
-    tags: ["v*"]
+    branches: ["main"]
+    paths:
+      - "Dockerfile.openclaw"
+      - ".github/workflows/build-openclaw.yaml"
   workflow_dispatch:
 
 env:
   REGISTRY: oci.killinit.cc
-  IMAGE: openclaw/workspace
+  IMAGE: openclaw/openclaw
 
 jobs:
   build:
@@ -33,19 +35,7 @@ jobs:
         id: tags
         run: |
           SHA=$(echo "$GITHUB_SHA" | cut -c1-7)
-          TAGS="${REGISTRY}/${IMAGE}:${SHA}"
-
-          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
-            VERSION="${GITHUB_REF#refs/tags/}"
-            TAGS="${TAGS},${REGISTRY}/${IMAGE}:${VERSION}"
-          elif [[ "$GITHUB_REF" == refs/heads/main ]]; then
-            TAGS="${TAGS},${REGISTRY}/${IMAGE}:latest,${REGISTRY}/${IMAGE}:main"
-          else
-            BRANCH="${GITHUB_REF#refs/heads/}"
-            BRANCH="${BRANCH//\//-}"
-            TAGS="${TAGS},${REGISTRY}/${IMAGE}:${BRANCH}"
-          fi
-
+          TAGS="${REGISTRY}/${IMAGE}:${SHA},${REGISTRY}/${IMAGE}:latest"
           echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
 
       - name: Login to registry
@@ -56,8 +46,8 @@ jobs:
       - name: Build amd64 (native)
         run: |
           set -e
-          docker build -t local-workspace:amd64 -f Dockerfile.workspace .
-          docker save local-workspace:amd64 -o amd64.tar
+          docker build -t local-openclaw:amd64 -f Dockerfile.openclaw .
+          docker save local-openclaw:amd64 -o amd64.tar
 
       - name: Build arm64 (QEMU)
         run: |
@@ -68,7 +58,7 @@ jobs:
             --provenance=false \
             --sbom=false \
             --output "type=docker,dest=arm64.tar" \
-            -f Dockerfile.workspace .
+            -f Dockerfile.openclaw .
 
       - name: Push per-arch images with skopeo
         run: |
