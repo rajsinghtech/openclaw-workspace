@@ -47,6 +47,6 @@ RUN curl -fsSL --retry 3 -o /out/bin/jq \
     "https://github.com/jqlang/jq/releases/latest/download/jq-linux-${TARGETARCH}" \
  && chmod +x /out/bin/jq
 
-FROM busybox:latest
+FROM scratch
 COPY --from=tools /out/bin/ /bin/
 COPY workspace/ /workspace/

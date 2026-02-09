@@ -22,6 +22,13 @@ jobs:
       - name: Create buildx builder
         run: docker buildx create --use --name multiarch --driver docker-container
 
+      - name: Install crane
+        run: |
+          set -e
+          V=$(curl -fsSL https://api.github.com/repos/google/go-containerregistry/releases/latest | jq -r .tag_name)
+          curl -fsSL "https://github.com/google/go-containerregistry/releases/download/${V}/go-containerregistry_Linux_x86_64.tar.gz" \
+            | tar xz -C /usr/local/bin crane
+
       - name: Compute tags
         id: tags
         run: |
@@ -42,9 +49,11 @@ jobs:
           echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
 
       - name: Login to registry
-        run: echo "${{ secrets.ZOT_PASSWORD }}" | docker login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" --password-stdin
+        run: |
+          echo "${{ secrets.ZOT_PASSWORD }}" | docker login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" --password-stdin
+          crane auth login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" -p "${{ secrets.ZOT_PASSWORD }}"
 
-      - name: Build and push per-arch images
+      - name: Build per-arch images
         run: |
           set -e
           for ARCH in amd64 arm64; do
@@ -53,9 +62,15 @@ jobs:
               --platform "linux/${ARCH}" \
               --provenance=false \
               --sbom=false \
-              -t "${REGISTRY}/${IMAGE}:build-${ARCH}" \
-              --push \
+              --output "type=oci,dest=${ARCH}.tar" \
               -f Dockerfile.workspace .
+          done
+
+      - name: Push per-arch images with crane
+        run: |
+          set -e
+          for ARCH in amd64 arm64; do
+            crane push "${ARCH}.tar" "${REGISTRY}/${IMAGE}:build-${ARCH}"
           done
 
       - name: Create and push multi-arch manifest
@@ -63,8 +78,8 @@ jobs:
           set -e
           IFS=',' read -ra TAG_LIST <<< "${{ steps.tags.outputs.tags }}"
           for TAG in "${TAG_LIST[@]}"; do
-            docker manifest create "$TAG" \
-              "${REGISTRY}/${IMAGE}:build-amd64" \
-              "${REGISTRY}/${IMAGE}:build-arm64"
-            docker manifest push "$TAG"
+            crane index append \
+              --manifest "${REGISTRY}/${IMAGE}:build-amd64" \
+              --manifest "${REGISTRY}/${IMAGE}:build-arm64" \
+              --tag "$TAG"
           done
