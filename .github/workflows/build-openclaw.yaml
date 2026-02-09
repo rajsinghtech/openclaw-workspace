@@ -11,14 +11,6 @@ on:
 env:
   REGISTRY: oci.killinit.cc
   IMAGE: openclaw/openclaw
-  # Pin tool versions — bump these to update
-  KUBECTL_V: v1.35.0
-  FLUX_V: v2.7.0
-  HELM_V: v4.1.1
-  KUSTOMIZE_V: v5.8.1
-  YQ_V: v4.52.2
-  SOPS_V: v3.11.0
-  JQ_V: jq-1.8.1
 
 jobs:
   build:
@@ -26,68 +18,44 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up QEMU
-        run: docker run --privileged --rm tonistiigi/binfmt --install all
+      - uses: docker/setup-qemu-action@v3
 
-      - name: Create buildx builder
-        run: docker buildx create --use --name multiarch --driver docker-container
+      - uses: docker/setup-buildx-action@v3
 
-      - name: Install crane
+      - uses: imjasonh/setup-crane@v0.4
+
+      - name: Login to registry
         run: |
-          set -e
-          V=$(curl -fsSL https://api.github.com/repos/google/go-containerregistry/releases/latest | jq -r .tag_name)
-          curl -fsSL "https://github.com/google/go-containerregistry/releases/download/${V}/go-containerregistry_Linux_x86_64.tar.gz" \
-            | tar xz -C /usr/local/bin crane
+          echo "${{ secrets.ZOT_PASSWORD }}" | docker login "${{ env.REGISTRY }}" -u "${{ secrets.ZOT_USERNAME }}" --password-stdin
+          crane auth login "${{ env.REGISTRY }}" -u "${{ secrets.ZOT_USERNAME }}" -p "${{ secrets.ZOT_PASSWORD }}"
 
       - name: Compute tags
         id: tags
         run: |
           SHA=$(echo "$GITHUB_SHA" | cut -c1-7)
-          TAGS="${REGISTRY}/${IMAGE}:${SHA},${REGISTRY}/${IMAGE}:latest"
-          echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
+          echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
 
-      - name: Login to registry
-        run: |
-          echo "${{ secrets.ZOT_PASSWORD }}" | docker login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" --password-stdin
-          crane auth login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" -p "${{ secrets.ZOT_PASSWORD }}"
+      - name: Build amd64
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.openclaw
+          platforms: linux/amd64
+          outputs: type=docker,dest=amd64.tar
+          cache-from: type=gha,scope=openclaw-amd64
+          cache-to: type=gha,scope=openclaw-amd64,mode=max
+          provenance: false
 
-      - name: Download tools for both architectures
-        run: |
-          set -e
-          grab() { curl -fsSL --retry 5 --retry-delay 2 --connect-timeout 15 -o "$1" "$2" && chmod +x "$1"; }
-          grab_tar() { curl -fsSL --retry 5 --retry-delay 2 --connect-timeout 15 "$1" | tar xz -C "$2" $3; }
-
-          for ARCH in amd64 arm64; do
-            mkdir -p "tools/${ARCH}"
-            D="tools/${ARCH}"
-
-            grab "$D/kubectl" "https://dl.k8s.io/release/${KUBECTL_V}/bin/linux/${ARCH}/kubectl"
-            grab_tar "https://github.com/fluxcd/flux2/releases/download/${FLUX_V}/flux_${FLUX_V#v}_linux_${ARCH}.tar.gz" "$D" flux
-            grab_tar "https://get.helm.sh/helm-${HELM_V}-linux-${ARCH}.tar.gz" /tmp "" && mv "/tmp/linux-${ARCH}/helm" "$D/" && rm -rf "/tmp/linux-${ARCH}"
-            grab_tar "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${KUSTOMIZE_V}/kustomize_${KUSTOMIZE_V}_linux_${ARCH}.tar.gz" "$D" ""
-            grab "$D/yq" "https://github.com/mikefarah/yq/releases/download/${YQ_V}/yq_linux_${ARCH}"
-            grab "$D/sops" "https://github.com/getsops/sops/releases/download/${SOPS_V}/sops-${SOPS_V}.linux.${ARCH}"
-            grab "$D/jq" "https://github.com/jqlang/jq/releases/download/${JQ_V}/jq-linux-${ARCH}"
-
-            echo "=== ${ARCH} ===" && ls -lh "$D/"
-          done
-
-      - name: Build amd64 (native)
-        run: |
-          set -e
-          docker build -t local-openclaw:amd64 -f Dockerfile.openclaw .
-          docker save local-openclaw:amd64 -o amd64.tar
-
-      - name: Build arm64 (QEMU)
-        run: |
-          set -e
-          docker buildx build \
-            --builder multiarch \
-            --platform linux/arm64 \
-            --provenance=false \
-            --sbom=false \
-            --output "type=docker,dest=arm64.tar" \
-            -f Dockerfile.openclaw .
+      - name: Build arm64
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.openclaw
+          platforms: linux/arm64
+          outputs: type=docker,dest=arm64.tar
+          cache-from: type=gha,scope=openclaw-arm64
+          cache-to: type=gha,scope=openclaw-arm64,mode=max
+          provenance: false
 
       - name: Push per-arch images with skopeo
         run: |
@@ -96,17 +64,16 @@ jobs:
           for ARCH in amd64 arm64; do
             skopeo copy \
               "docker-archive:${ARCH}.tar" \
-              "docker://${REGISTRY}/${IMAGE}:build-${ARCH}" \
+              "docker://${{ env.REGISTRY }}/${{ env.IMAGE }}:build-${ARCH}" \
               --dest-creds "$CREDS"
           done
 
       - name: Create and push multi-arch manifest
         run: |
           set -e
-          IFS=',' read -ra TAG_LIST <<< "${{ steps.tags.outputs.tags }}"
-          for TAG in "${TAG_LIST[@]}"; do
+          for TAG in "${{ steps.tags.outputs.sha }}" "latest"; do
             crane index append \
-              --manifest "${REGISTRY}/${IMAGE}:build-amd64" \
-              --manifest "${REGISTRY}/${IMAGE}:build-arm64" \
-              --tag "$TAG"
+              --manifest "${{ env.REGISTRY }}/${{ env.IMAGE }}:build-amd64" \
+              --manifest "${{ env.REGISTRY }}/${{ env.IMAGE }}:build-arm64" \
+              --tag "${{ env.REGISTRY }}/${{ env.IMAGE }}:${TAG}"
           done

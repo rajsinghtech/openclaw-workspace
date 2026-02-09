@@ -6,11 +6,12 @@ This repo contains two independently built artifacts plus Kubernetes manifests:
 
 ### Images
 - **`oci.killinit.cc/openclaw/openclaw`** — Custom OpenClaw image with CLI tools baked in
-  - Base: `ghcr.io/openclaw/openclaw:2026.2.6`
-  - Tools: kubectl, flux, helm, kustomize, yq, sops, jq
-  - Built from `Dockerfile.openclaw`
+  - Base: `ghcr.io/openclaw/openclaw:2026.2.6` (already multi-arch amd64+arm64)
+  - Tools: kubectl, flux, helm, kustomize, yq, sops, jq (versions pinned as Dockerfile ARGs)
+  - Multi-stage Dockerfile: `debian:bookworm-slim` downloads tools, then COPY into upstream
   - Workflow: `.github/workflows/build-openclaw.yaml`
   - Triggers on: `Dockerfile.openclaw` or workflow changes
+  - Uses official Docker Actions + GHA layer cache
 
 - **`oci.killinit.cc/openclaw/workspace`** — Workspace content (markdown, skills)
   - Pure content image (`FROM scratch`)
@@ -23,6 +24,7 @@ This repo contains two independently built artifacts plus Kubernetes manifests:
 - Flux watches `rajsinghtech/openclaw-workspace` repo, path `./kustomization`
 - Variable substitution from `common-secrets`, `common-settings`, `cluster-settings`, `cluster-secrets`
 - SOPS encryption with PGP key: `FAC8E7C3A2BC7DEE58A01C5928E1AB8AF0CF07A5`
+- Config uses `configMapGenerator` with raw `openclaw.json` (not inline YAML)
 
 ## Registry: Zot (`oci.killinit.cc`)
 
@@ -32,14 +34,14 @@ Multi-arch manifests work via `crane index append` after per-arch images are pus
 
 ## Build Pattern
 
-Tools are downloaded **natively on the CI runner** (not inside Docker/QEMU) for both architectures,
-then COPY'd into the image. This avoids slow QEMU-emulated downloads and flaky CDN issues.
+Tools are downloaded **inside the Dockerfile** via multi-stage build. Each tool is a separate
+`RUN` layer, so Docker caches them individually. GHA cache (`cache-from`/`cache-to`) persists
+layers between CI runs.
 
 ```
-Runner (amd64) → download tools/amd64/* and tools/arm64/*
-                → docker build (amd64, native) → docker save → skopeo push
-                → buildx build (arm64, QEMU, just COPY) → save tar → skopeo push
-                → crane index append (multi-arch manifest)
+docker/build-push-action (amd64) → output tar → skopeo push
+docker/build-push-action (arm64) → output tar → skopeo push
+crane index append → multi-arch manifest
 ```
 
 ## Key Paths
@@ -48,12 +50,12 @@ Runner (amd64) → download tools/amd64/* and tools/arm64/*
 |------|---------|
 | `/home/node/.openclaw/` | Runtime state dir (emptyDir, fresh each restart) |
 | `/home/node/.openclaw/workspace/` | Workspace content (copied from OCI ImageVolume) |
-| `/home/node/.openclaw/clawdbot.json` | Config (mounted from ConfigMap) |
+| `/home/node/.openclaw/clawdbot.json` | Config (copied from ConfigMap by init container, writable) |
 | `/usr/local/bin/` | CLI tools (baked into openclaw image) |
 
 ## Deployment
 
 - Tailscale sidecar with ephemeral auth, POD_NAME as hostname
 - Workspace content delivered via Kubernetes ImageVolume (`pullPolicy: Always`)
-- Config delivered via ConfigMap
+- Config copied to emptyDir by init container (must be writable for OpenClaw auto-config)
 - Single replica, Recreate strategy

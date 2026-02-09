@@ -4,7 +4,6 @@ kind: Kustomization
 namespace: openclaw
 resources:
   - deployment.yaml
-  - configmap.yaml
   - service-main.yaml
   - httproute.yaml
   - egress.yaml
@@ -12,3 +11,9 @@ resources:
   - secret.sops.yaml
   - ts-oauth.yaml
   - pull-secret.yaml
+configMapGenerator:
+  - name: openclaw-config
+    files:
+      - openclaw.json
+generatorOptions:
+  disableNameSuffixHash: true

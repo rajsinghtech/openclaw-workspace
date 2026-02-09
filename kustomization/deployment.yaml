@@ -37,12 +37,17 @@ spec:
               set -e
               echo "[init-workspace] Copying workspace template..."
               cp -a /opt/workspace/workspace /home/node/.openclaw/workspace
+              echo "[init-workspace] Copying config..."
+              cp /opt/config/openclaw.json /home/node/.openclaw/clawdbot.json
               echo "[init-workspace] Done"
           volumeMounts:
             - name: data
               mountPath: /home/node/.openclaw
             - name: workspace
               mountPath: /opt/workspace
+              readOnly: true
+            - name: config
+              mountPath: /opt/config
               readOnly: true
       containers:
         - name: main
@@ -57,10 +62,6 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /home/node/.openclaw
-            - name: config
-              mountPath: /home/node/.openclaw/clawdbot.json
-              subPath: openclaw.json
-              readOnly: true
         - name: tailscale
           image: ghcr.io/tailscale/tailscale:v1.94.1
           securityContext:
