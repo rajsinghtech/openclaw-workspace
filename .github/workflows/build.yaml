@@ -19,6 +19,9 @@ jobs:
       - name: Set up QEMU
         run: docker run --privileged --rm tonistiigi/binfmt --install all
 
+      - name: Create buildx builder
+        run: docker buildx create --use --name multiarch --driver docker-container
+
       - name: Compute tags
         id: tags
         run: |
@@ -41,13 +44,27 @@ jobs:
       - name: Login to registry
         run: echo "${{ secrets.ZOT_PASSWORD }}" | docker login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" --password-stdin
 
-      - name: Build and push
+      - name: Build and push per-arch images
         run: |
-          docker buildx create --use
-          docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            --provenance=false \
-            --sbom=false \
-            $(echo "${{ steps.tags.outputs.tags }}" | tr ',' '\n' | sed 's/^/-t /') \
-            --push \
-            -f Dockerfile.workspace .
+          set -e
+          for ARCH in amd64 arm64; do
+            docker buildx build \
+              --builder multiarch \
+              --platform "linux/${ARCH}" \
+              --provenance=false \
+              --sbom=false \
+              --output "type=image,push=true,oci-mediatypes=false" \
+              -t "${REGISTRY}/${IMAGE}:build-${ARCH}" \
+              -f Dockerfile.workspace .
+          done
+
+      - name: Create and push multi-arch manifest
+        run: |
+          set -e
+          IFS=',' read -ra TAG_LIST <<< "${{ steps.tags.outputs.tags }}"
+          for TAG in "${TAG_LIST[@]}"; do
+            docker manifest create "$TAG" \
+              "${REGISTRY}/${IMAGE}:build-amd64" \
+              "${REGISTRY}/${IMAGE}:build-arm64"
+            docker manifest push "$TAG"
+          done
