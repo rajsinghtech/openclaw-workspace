@@ -53,8 +53,8 @@ jobs:
               --platform "linux/${ARCH}" \
               --provenance=false \
               --sbom=false \
-              --output "type=image,push=true,oci-mediatypes=false" \
               -t "${REGISTRY}/${IMAGE}:build-${ARCH}" \
+              --push \
               -f Dockerfile.workspace .
           done
 
