@@ -10,14 +10,15 @@ RUN V=$(curl -fsSL --retry 3 https://dl.k8s.io/release/stable.txt) \
  && chmod +x /out/bin/kubectl
 
 # flux
-RUN V=$(curl -fsSL --retry 3 -o /dev/null -w '%{redirect_url}' "https://github.com/fluxcd/flux2/releases/latest" | grep -oE '[^/]+$') \
- && VNUM=${V#v} \
+RUN URL=$(curl -fsSL --retry 3 -o /dev/null -w '%{redirect_url}' "https://github.com/fluxcd/flux2/releases/latest") \
+ && V=${URL##*/} && VNUM=${V#v} \
  && curl -fsSL --retry 3 "https://github.com/fluxcd/flux2/releases/download/${V}/flux_${VNUM}_linux_${TARGETARCH}.tar.gz" \
     | tar xz -C /out/bin flux \
  && chmod +x /out/bin/flux
 
 # helm
-RUN V=$(curl -fsSL --retry 3 -o /dev/null -w '%{redirect_url}' "https://github.com/helm/helm/releases/latest" | grep -oE '[^/]+$') \
+RUN URL=$(curl -fsSL --retry 3 -o /dev/null -w '%{redirect_url}' "https://github.com/helm/helm/releases/latest") \
+ && V=${URL##*/} \
  && curl -fsSL --retry 3 "https://get.helm.sh/helm-${V}-linux-${TARGETARCH}.tar.gz" \
     | tar xz -C /tmp \
  && mv /tmp/linux-${TARGETARCH}/helm /out/bin/ \
@@ -36,7 +37,8 @@ RUN curl -fsSL --retry 3 -o /out/bin/yq \
  && chmod +x /out/bin/yq
 
 # sops
-RUN V=$(curl -fsSL --retry 3 -o /dev/null -w '%{redirect_url}' "https://github.com/getsops/sops/releases/latest" | grep -oE '[^/]+$') \
+RUN URL=$(curl -fsSL --retry 3 -o /dev/null -w '%{redirect_url}' "https://github.com/getsops/sops/releases/latest") \
+ && V=${URL##*/} \
  && curl -fsSL --retry 3 -o /out/bin/sops \
     "https://github.com/getsops/sops/releases/download/${V}/sops-${V}.linux.${TARGETARCH}" \
  && chmod +x /out/bin/sops

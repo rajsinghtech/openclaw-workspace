@@ -51,6 +51,8 @@ spec:
           env:
             - name: PATH
               value: /home/node/.openclaw/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+            - name: CLAWDBOT_STATE_DIR
+              value: /home/node/.openclaw
           envFrom:
             - secretRef:
                 name: openclaw-secrets
@@ -62,7 +64,8 @@ spec:
             - name: data
               mountPath: /home/node/.openclaw
             - name: config
-              mountPath: /home/node/.openclaw/config
+              mountPath: /home/node/.openclaw/clawdbot.json
+              subPath: openclaw.json
               readOnly: true
         - name: tailscale
           image: ghcr.io/tailscale/tailscale:v1.94.1
