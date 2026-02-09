@@ -43,6 +43,37 @@ jobs:
           echo "${{ secrets.ZOT_PASSWORD }}" | docker login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" --password-stdin
           crane auth login "$REGISTRY" -u "${{ secrets.ZOT_USERNAME }}" -p "${{ secrets.ZOT_PASSWORD }}"
 
+      - name: Download tools for both architectures
+        run: |
+          set -e
+          grab() { curl -fsSL --retry 3 --connect-timeout 15 -o "$1" "$2" && chmod +x "$1"; }
+          grab_tar() { curl -fsSL --retry 3 --connect-timeout 15 "$1" | tar xz -C "$2" $3; }
+          ghver() { curl -fsSL --retry 3 https://api.github.com/repos/$1/releases/latest | jq -r .tag_name; }
+
+          KUBECTL_V=$(curl -fsSL --retry 3 https://dl.k8s.io/release/stable.txt)
+          FLUX_V=$(ghver fluxcd/flux2)
+          HELM_V=$(ghver helm/helm)
+          KUSTOMIZE_V=$(curl -fsSL --retry 3 "https://api.github.com/repos/kubernetes-sigs/kustomize/releases?per_page=30" \
+            | jq -r '[.[] | select(.tag_name | startswith("kustomize/"))][0].tag_name' | sed 's|kustomize/||')
+          SOPS_V=$(ghver getsops/sops)
+
+          echo "kubectl=$KUBECTL_V flux=$FLUX_V helm=$HELM_V kustomize=$KUSTOMIZE_V sops=$SOPS_V"
+
+          for ARCH in amd64 arm64; do
+            mkdir -p "tools/${ARCH}"
+            D="tools/${ARCH}"
+
+            grab "$D/kubectl" "https://dl.k8s.io/release/${KUBECTL_V}/bin/linux/${ARCH}/kubectl"
+            grab_tar "https://github.com/fluxcd/flux2/releases/download/${FLUX_V}/flux_${FLUX_V#v}_linux_${ARCH}.tar.gz" "$D" flux
+            grab_tar "https://get.helm.sh/helm-${HELM_V}-linux-${ARCH}.tar.gz" /tmp "" && mv "/tmp/linux-${ARCH}/helm" "$D/" && rm -rf "/tmp/linux-${ARCH}"
+            grab_tar "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${KUSTOMIZE_V}/kustomize_${KUSTOMIZE_V}_linux_${ARCH}.tar.gz" "$D" ""
+            grab "$D/yq" "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${ARCH}"
+            grab "$D/sops" "https://github.com/getsops/sops/releases/download/${SOPS_V}/sops-${SOPS_V}.linux.${ARCH}"
+            grab "$D/jq" "https://github.com/jqlang/jq/releases/latest/download/jq-linux-${ARCH}"
+
+            echo "=== ${ARCH} ===" && ls -lh "$D/"
+          done
+
       - name: Build amd64 (native)
         run: |
           set -e
