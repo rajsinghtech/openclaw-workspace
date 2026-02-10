@@ -12,8 +12,6 @@ resources:
   - ts-oauth.yaml
   - pull-secret.yaml
   - pvc.yaml
-  - receiver.yaml
-  - webhook-secret.yaml
 configMapGenerator:
   - name: openclaw-config
     files:
