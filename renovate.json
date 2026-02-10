@@ -1,0 +1,76 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "schedule": ["before 9am on monday"],
+  "packageRules": [
+    {
+      "groupName": "cli-tools",
+      "matchFileNames": ["Dockerfile.openclaw"],
+      "matchManagers": ["custom.regex"]
+    },
+    {
+      "groupName": "github-actions",
+      "matchManagers": ["github-actions"]
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^Dockerfile\\.openclaw$"],
+      "matchStrings": ["ARG KUBECTL_V=(?<currentValue>v[\\d.]+)"],
+      "depNameTemplate": "kubernetes/kubernetes",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^Dockerfile\\.openclaw$"],
+      "matchStrings": ["ARG FLUX_V=(?<currentValue>v[\\d.]+)"],
+      "depNameTemplate": "fluxcd/flux2",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^Dockerfile\\.openclaw$"],
+      "matchStrings": ["ARG HELM_V=(?<currentValue>v[\\d.]+)"],
+      "depNameTemplate": "helm/helm",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^Dockerfile\\.openclaw$"],
+      "matchStrings": ["ARG KUSTOMIZE_V=(?<currentValue>v[\\d.]+)"],
+      "depNameTemplate": "kubernetes-sigs/kustomize",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^kustomize/(?<version>.*)$"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^Dockerfile\\.openclaw$"],
+      "matchStrings": ["ARG YQ_V=(?<currentValue>v[\\d.]+)"],
+      "depNameTemplate": "mikefarah/yq",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^Dockerfile\\.openclaw$"],
+      "matchStrings": ["ARG SOPS_V=(?<currentValue>v[\\d.]+)"],
+      "depNameTemplate": "getsops/sops",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^Dockerfile\\.openclaw$"],
+      "matchStrings": ["ARG JQ_V=(?<currentValue>jq-[\\d.]+)"],
+      "depNameTemplate": "jqlang/jq",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^Dockerfile\\.openclaw$"],
+      "matchStrings": ["ARG GH_V=(?<currentValue>[\\d.]+)"],
+      "depNameTemplate": "cli/cli",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.*)$"
+    }
+  ]
+}
