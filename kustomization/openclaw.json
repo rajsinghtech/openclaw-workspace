@@ -103,17 +103,6 @@
       }
     ]
   },
-  "compaction": {
-    "memoryFlush": {
-      "enabled": true
-    }
-  },
-  "memorySearch": {
-    "experimental": {
-      "sessionMemory": true,
-      "sources": ["memory", "sessions"]
-    }
-  },
   "session": {
     "scope": "per-sender",
     "idleMinutes": 60
