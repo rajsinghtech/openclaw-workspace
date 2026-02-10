@@ -38,6 +38,6 @@ jobs:
       - name: Reconcile and restart
         run: |
           sudo tailscale configure kubeconfig ottawa-k8s-operator.keiretsu.ts.net
-          sudo flux reconcile kustomization openclaw -n flux-system --with-source
+          flux reconcile kustomization openclaw -n flux-system --with-source
           sudo kubectl rollout restart deployment openclaw -n openclaw
           sudo kubectl rollout status deployment openclaw -n openclaw --timeout=120s
