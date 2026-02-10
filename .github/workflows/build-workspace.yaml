@@ -9,6 +9,10 @@ on:
       - ".github/workflows/build-workspace.yaml"
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
   REGISTRY: oci.killinit.cc
   IMAGE: openclaw/workspace
@@ -60,3 +64,17 @@ jobs:
           for TAG in "${TAG_LIST[@]}"; do
             crane tag "${REGISTRY}/${IMAGE}:build-amd64" "${TAG##*:}"
           done
+
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: TbqNGJkY5611CNTRL-kz4CwX2LK721CNTRL
+          audience: api.tailscale.com/TbqNGJkY5611CNTRL-kz4CwX2LK721CNTRL
+          tags: tag:ci
+          args: --accept-dns
+
+      - name: Configure kubeconfig and rollout restart
+        run: |
+          tailscale configure kubeconfig ottawa-k8s-operator.keiretsu.ts.net
+          kubectl rollout restart deployment openclaw -n openclaw
+          kubectl rollout status deployment openclaw -n openclaw --timeout=120s

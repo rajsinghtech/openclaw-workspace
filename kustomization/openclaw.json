@@ -84,6 +84,16 @@
           "sessionMemory": true
         },
         "sources": ["memory", "sessions"]
+      },
+      "heartbeat": {
+        "every": "30m",
+        "model": "nvidia/moonshotai/kimi-k2.5",
+        "target": "discord",
+        "activeHours": {
+          "start": "08:00",
+          "end": "23:00",
+          "timezone": "America/New_York"
+        }
       }
     },
     "list": [
