@@ -71,6 +71,19 @@
       "maxConcurrent": 1,
       "subagents": {
         "maxConcurrent": 8
+      },
+      "compaction": {
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 4000
+        }
+      },
+      "memorySearch": {
+        "enabled": true,
+        "experimental": {
+          "sessionMemory": true
+        },
+        "sources": ["memory", "sessions"]
       }
     },
     "list": [
