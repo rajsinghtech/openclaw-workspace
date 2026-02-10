@@ -17,6 +17,14 @@
     {
       "customType": "regex",
       "fileMatch": ["^Dockerfile\\.openclaw$"],
+      "matchStrings": ["FROM ghcr\\.io/openclaw/openclaw:(?<currentValue>[\\d.]+)"],
+      "depNameTemplate": "ghcr.io/openclaw/openclaw",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "loose"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^Dockerfile\\.openclaw$"],
       "matchStrings": ["ARG KUBECTL_V=(?<currentValue>v[\\d.]+)"],
       "depNameTemplate": "kubernetes/kubernetes",
       "datasourceTemplate": "github-releases"

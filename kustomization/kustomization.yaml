@@ -16,6 +16,7 @@ configMapGenerator:
   - name: openclaw-config
     files:
       - openclaw.json
+      - cron-jobs.json
 secretGenerator:
   - name: openclaw-kubeconfig
     files:
