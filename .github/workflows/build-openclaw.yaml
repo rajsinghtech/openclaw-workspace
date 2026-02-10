@@ -92,6 +92,6 @@ jobs:
 
       - name: Configure kubeconfig and rollout restart
         run: |
-          tailscale configure kubeconfig ottawa-k8s-operator.keiretsu.ts.net
+          sudo tailscale configure kubeconfig ottawa-k8s-operator.keiretsu.ts.net
           kubectl rollout restart deployment openclaw -n openclaw
           kubectl rollout status deployment openclaw -n openclaw --timeout=120s
