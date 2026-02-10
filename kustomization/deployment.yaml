@@ -71,6 +71,14 @@ spec:
           env:
             - name: KUBECONFIG
               value: /home/node/.kube/config
+            - name: GIT_AUTHOR_NAME
+              value: rajsinghtechbot
+            - name: GIT_AUTHOR_EMAIL
+              value: king360raj@gmail.com
+            - name: GIT_COMMITTER_NAME
+              value: rajsinghtechbot
+            - name: GIT_COMMITTER_EMAIL
+              value: king360raj@gmail.com
           envFrom:
             - secretRef:
                 name: openclaw-secrets
