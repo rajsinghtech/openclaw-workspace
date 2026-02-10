@@ -14,6 +14,7 @@ resources:
   - pvc.yaml
   - receiver.yaml
   - webhook-ingress.yaml
+  - webhook-secret.yaml
 configMapGenerator:
   - name: openclaw-config
     files:
