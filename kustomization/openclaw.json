@@ -23,7 +23,9 @@
           {
             "id": "Qwen3-Coder-Next",
             "name": "Qwen3 Coder Next",
-            "input": ["text"],
+            "input": [
+              "text"
+            ],
             "contextWindow": 131072,
             "maxTokens": 8192
           }
@@ -37,7 +39,10 @@
           {
             "id": "claude-opus-4-6",
             "name": "Claude Opus 4.6",
-            "input": ["text", "image"],
+            "input": [
+              "text",
+              "image"
+            ],
             "contextWindow": 200000,
             "maxTokens": 32000
           }
@@ -51,7 +56,9 @@
           {
             "id": "moonshotai/kimi-k2.5",
             "name": "Kimi K2.5",
-            "input": ["text"],
+            "input": [
+              "text"
+            ],
             "contextWindow": 131072,
             "maxTokens": 16384,
             "reasoning": true
@@ -83,7 +90,10 @@
         "experimental": {
           "sessionMemory": true
         },
-        "sources": ["memory", "sessions"]
+        "sources": [
+          "memory",
+          "sessions"
+        ]
       }
     },
     "list": [
@@ -98,7 +108,12 @@
           "primary": "nvidia/moonshotai/kimi-k2.5"
         },
         "subagents": {
-          "allowAgents": ["morty", "dyson"]
+          "allowAgents": [
+            "main",
+            "morty",
+            "dyson",
+            "robert"
+          ]
         },
         "heartbeat": {
           "every": "30m",
@@ -123,7 +138,9 @@
         },
         "subagents": {
           "model": "nvidia/moonshotai/kimi-k2.5",
-          "allowAgents": ["main"]
+          "allowAgents": [
+            "main"
+          ]
         }
       },
       {
@@ -138,7 +155,9 @@
         },
         "subagents": {
           "model": "nvidia/moonshotai/kimi-k2.5",
-          "allowAgents": ["main"]
+          "allowAgents": [
+            "main"
+          ]
         },
         "heartbeat": {
           "every": "15m",
