@@ -1,0 +1,66 @@
+name: Restart OpenClaw
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "kustomization/openclaw.json"
+  workflow_run:
+    workflows: ["Build & Push OpenClaw Image", "Build & Push Workspace Image"]
+    types: [completed]
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  restart:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Wait for sibling builds
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = context.eventName === 'workflow_run'
+              ? context.payload.workflow_run.head_sha
+              : context.sha;
+
+            for (const wf of ['build-openclaw.yaml', 'build-workspace.yaml']) {
+              const {data} = await github.rest.actions.listWorkflowRuns({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: wf,
+                head_sha: sha,
+              });
+
+              const active = data.workflow_runs.some(r =>
+                ['in_progress', 'queued', 'waiting', 'pending'].includes(r.status)
+              );
+
+              if (active) {
+                core.info(`${wf} still in progress for ${sha}, deferring restart`);
+                core.setOutput('skip', 'true');
+                return;
+              }
+            }
+            core.setOutput('skip', 'false');
+
+      - name: Connect to Tailscale
+        if: steps.check.outputs.skip != 'true'
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: TbqNGJkY5611CNTRL-kz4CwX2LK721CNTRL
+          audience: api.tailscale.com/TbqNGJkY5611CNTRL-kz4CwX2LK721CNTRL
+          tags: tag:ci
+          args: --accept-dns
+
+      - name: Rollout restart
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          sudo tailscale configure kubeconfig ottawa-k8s-operator.keiretsu.ts.net
+          sudo kubectl rollout restart deployment openclaw -n openclaw
+          sudo kubectl rollout status deployment openclaw -n openclaw --timeout=120s

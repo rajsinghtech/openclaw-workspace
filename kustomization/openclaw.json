@@ -149,8 +149,7 @@
             "end": "23:59",
             "timezone": "America/New_York"
           }
-        },
-        "timeoutSeconds": 900
+        }
       },
       {
         "id": "robert",
@@ -164,8 +163,7 @@
         },
         "subagents": {
           "allowAgents": []
-        },
-        "maxConcurrent": 1
+        }
       }
     ]
   },
