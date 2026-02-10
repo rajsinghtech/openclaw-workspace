@@ -5,6 +5,7 @@ metadata:
   name: openclaw
 spec:
   replicas: 1
+  revisionHistoryLimit: 3
   strategy:
     type: Recreate
   selector:
@@ -27,6 +28,12 @@ spec:
               sysctl -w net.ipv4.ip_forward=1 &&
               if sysctl net.ipv6.conf.all.forwarding;
               then sysctl -w net.ipv6.conf.all.forwarding=1; fi
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
           securityContext:
             privileged: true
         - name: init-workspace
@@ -51,9 +58,19 @@ spec:
             - name: config
               mountPath: /opt/config
               readOnly: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
       containers:
-        - name: main
+        - name: openclaw
           image: oci.killinit.cc/openclaw/openclaw:latest
+          imagePullPolicy: Always
+          env:
+            - name: KUBECONFIG
+              value: /home/node/.kube/config
           envFrom:
             - secretRef:
                 name: openclaw-secrets
@@ -61,9 +78,18 @@ spec:
             - name: http
               containerPort: 18789
               protocol: TCP
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              memory: 4Gi
           volumeMounts:
             - name: data
               mountPath: /home/node/.openclaw
+            - name: kubeconfig
+              mountPath: /home/node/.kube
+              readOnly: true
         - name: tailscale
           image: ghcr.io/tailscale/tailscale:v1.94.1
           securityContext:
@@ -94,6 +120,13 @@ spec:
               value: "--advertise-tags=tag:k8s,tag:ottawa --accept-routes"
             - name: TS_HOSTNAME
               value: $(POD_NAME)
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+      terminationGracePeriodSeconds: 60
       volumes:
         - name: data
           emptyDir: {}
@@ -104,3 +137,6 @@ spec:
         - name: config
           configMap:
             name: openclaw-config
+        - name: kubeconfig
+          secret:
+            secretName: openclaw-kubeconfig

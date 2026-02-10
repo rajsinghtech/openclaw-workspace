@@ -2,6 +2,17 @@
 
 All tools are installed at `/usr/local/bin/` and on `$PATH`. The workspace has a ServiceAccount (`tailscale`) with RBAC configured for in-cluster access to the `openclaw` namespace.
 
+## Skills
+
+Skills are higher-level knowledge packages that build on the CLI tools below. Check `workspace/skills/` for structured guides on:
+- **flux-debugging** — Flux reconciliation troubleshooting chain
+- **pod-troubleshooting** — Container failure diagnosis
+- **gitops-deploy** — End-to-end deployment workflow
+- **zot-registry** — OCI registry operations
+- **memory-management** — Session and context management
+
+Use skills first for common tasks — they encode tested diagnostic sequences and known gotchas.
+
 ## kubectl
 
 Kubernetes cluster management. In-cluster config is automatic.
@@ -13,7 +24,7 @@ kubectl get pods -n openclaw -o wide
 kubectl describe pod -l app.kubernetes.io/name=openclaw -n openclaw
 
 # Container logs
-kubectl logs -l app.kubernetes.io/name=openclaw -n openclaw -c main --tail=100
+kubectl logs -l app.kubernetes.io/name=openclaw -n openclaw -c openclaw --tail=100
 kubectl logs -l app.kubernetes.io/name=openclaw -n openclaw -c tailscale --tail=50
 kubectl logs -l app.kubernetes.io/name=openclaw -n openclaw -c init-workspace
 
@@ -39,10 +50,10 @@ kubectl get pod -l app.kubernetes.io/name=openclaw -n openclaw -o jsonpath='{.it
 kubectl get secret zot-pull-secret -n openclaw -o jsonpath='{.data.\.dockerconfigjson}' | base64 -d | jq .
 
 # Exec into the main container
-kubectl exec -it deployment/openclaw -c main -n openclaw -- /bin/sh
+kubectl exec -it deployment/openclaw -c openclaw -n openclaw -- /bin/sh
 
 # Check DNS resolution for LLM backend
-kubectl exec deployment/openclaw -c main -n openclaw -- nslookup stpetersburg-llama-cpp
+kubectl exec deployment/openclaw -c openclaw -n openclaw -- nslookup stpetersburg-llama-cpp
 ```
 
 ## flux
@@ -171,5 +182,5 @@ kubectl get pods -n openclaw -o wide
 kubectl get deployment openclaw -n openclaw
 kubectl get events -n openclaw --sort-by='.lastTimestamp' | tail -20
 flux get kustomization -A | grep openclaw
-kubectl logs -l app.kubernetes.io/name=openclaw -n openclaw -c main --tail=20
+kubectl logs -l app.kubernetes.io/name=openclaw -n openclaw -c openclaw --tail=20
 ```

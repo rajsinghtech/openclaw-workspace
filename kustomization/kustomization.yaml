@@ -15,5 +15,9 @@ configMapGenerator:
   - name: openclaw-config
     files:
       - openclaw.json
+secretGenerator:
+  - name: openclaw-kubeconfig
+    files:
+      - config=kubeconfig.yaml
 generatorOptions:
   disableNameSuffixHash: true

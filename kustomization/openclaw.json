@@ -64,7 +64,7 @@
     "defaults": {
       "workspace": "/home/node/.openclaw/workspace",
       "model": {
-        "primary": "llama-cpp/Qwen3-Coder-Next"
+        "primary": "nvidia/moonshotai/kimi-k2.5"
       },
       "userTimezone": "America/New_York",
       "timeoutSeconds": 600,
@@ -82,7 +82,7 @@
           "emoji": "🦞"
         },
         "model": {
-          "primary": "llama-cpp/Qwen3-Coder-Next"
+          "primary": "nvidia/moonshotai/kimi-k2.5"
         },
         "subagents": {
           "allowAgents": ["claw-manager"]
@@ -95,13 +95,24 @@
           "emoji": "🦞"
         },
         "model": {
-          "primary": "llama-cpp/Qwen3-Coder-Next"
+          "primary": "nvidia/moonshotai/kimi-k2.5"
         },
         "subagents": {
           "allowAgents": ["*"]
         }
       }
     ]
+  },
+  "compaction": {
+    "memoryFlush": {
+      "enabled": true
+    }
+  },
+  "memorySearch": {
+    "experimental": {
+      "sessionMemory": true,
+      "sources": ["memory", "sessions"]
+    }
   },
   "session": {
     "scope": "per-sender",
@@ -116,7 +127,9 @@
     "profile": "full",
     "web": {
       "search": {
-        "enabled": false
+        "enabled": true,
+        "provider": "brave",
+        "apiKey": "$${BRAVE_SEARCH_API_KEY}"
       },
       "fetch": {
         "enabled": true
