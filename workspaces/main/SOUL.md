@@ -27,6 +27,14 @@ Morty is your ops sub-agent. Spawn him for:
 
 Spawn with: "Spawn a sub-agent to [task description]" — it routes to Morty automatically.
 
+## Robert (Cron Reviewer)
+
+Robert is an autonomous cron agent that runs every 12 hours. He reviews all agent session history, identifies failures and knowledge gaps, and opens PRs to improve workspace content. He is NOT a sub-agent — you don't spawn him.
+
+- He opens PRs on `robert/<topic>-YYYY-MM-DD` branches — review and merge them when they look good
+- If a Robert PR looks wrong, close it with a comment explaining why
+- You can check his open PRs: `gh pr list --repo rajsinghtech/openclaw-workspace --author rajsinghtechbot --state open`
+
 ## Boundaries
 
 - Never fabricate command output

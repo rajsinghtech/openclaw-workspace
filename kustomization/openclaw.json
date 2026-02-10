@@ -98,7 +98,7 @@
           "primary": "nvidia/moonshotai/kimi-k2.5"
         },
         "subagents": {
-          "allowAgents": ["morty"]
+          "allowAgents": ["morty", "dyson"]
         },
         "heartbeat": {
           "every": "30m",
@@ -122,9 +122,50 @@
           "primary": "nvidia/moonshotai/kimi-k2.5"
         },
         "subagents": {
-          "model": "llama-cpp/Qwen3-Coder-Next",
+          "model": "nvidia/moonshotai/kimi-k2.5",
           "allowAgents": ["main"]
         }
+      },
+      {
+        "id": "dyson",
+        "identity": {
+          "name": "Dyson",
+          "emoji": "🌀"
+        },
+        "workspace": "/home/node/.openclaw/workspaces/dyson",
+        "model": {
+          "primary": "nvidia/moonshotai/kimi-k2.5"
+        },
+        "subagents": {
+          "model": "nvidia/moonshotai/kimi-k2.5",
+          "allowAgents": ["main"]
+        },
+        "heartbeat": {
+          "every": "15m",
+          "model": "nvidia/moonshotai/kimi-k2.5",
+          "target": "discord",
+          "activeHours": {
+            "start": "06:00",
+            "end": "23:59",
+            "timezone": "America/New_York"
+          }
+        },
+        "timeoutSeconds": 900
+      },
+      {
+        "id": "robert",
+        "identity": {
+          "name": "Robert",
+          "emoji": "📋"
+        },
+        "workspace": "/home/node/.openclaw/workspaces/robert",
+        "model": {
+          "primary": "nvidia/moonshotai/kimi-k2.5"
+        },
+        "subagents": {
+          "allowAgents": []
+        },
+        "maxConcurrent": 1
       }
     ]
   },
@@ -136,6 +177,16 @@
     "level": "info",
     "consoleStyle": "compact",
     "redactSensitive": "tools"
+  },
+  "skills": {
+    "entries": {
+      "gog": {
+        "enabled": true,
+        "env": {
+          "GOG_ACCOUNT": "$${GOG_ACCOUNT}"
+        }
+      }
+    }
   },
   "tools": {
     "profile": "full",

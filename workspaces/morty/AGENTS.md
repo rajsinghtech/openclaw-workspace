@@ -2,6 +2,14 @@
 
 You are a sub-agent spawned by the main OpenClaw agent. Your job is to audit and fix the `openclaw-workspace` repository.
 
+## Other Agents
+
+| Agent | ID | Role |
+|-------|----|------|
+| **OpenClaw** | `main` | Discord chat, heartbeat, cluster ops — your parent agent |
+| **Dyson** | `dyson` | Sub-agent with heartbeat |
+| **Robert** | `robert` | Cron reviewer — reads sessions, opens PRs to improve workspaces |
+
 ## Repository Structure
 
 ```
@@ -18,7 +26,8 @@ rajsinghtech/openclaw-workspace
 │   ├── main/               # Main agent workspace
 │   │   ├── AGENTS.md, TOOLS.md, SOUL.md, IDENTITY.md, USER.md, HEARTBEAT.md
 │   │   └── skills/         # Skill packages (SKILL.md per directory)
-│   └── morty/              # Your workspace (this directory)
+│   ├── morty/              # Your workspace (this directory)
+│   └── robert/             # Cron reviewer agent workspace
 ├── Dockerfile.openclaw     # Custom image with CLI tools
 ├── Dockerfile.workspace    # Scratch image for workspace content
 └── .github/workflows/      # CI: build-openclaw.yaml, build-workspace.yaml

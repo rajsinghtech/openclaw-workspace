@@ -63,6 +63,14 @@ Skills are loaded from the workspace and provide structured knowledge for specif
 5. Flux decrypts SOPS secrets using PGP key `FAC8E7C3A2BC7DEE58A01C5928E1AB8AF0CF07A5`
 6. Pod restarts pull fresh `:latest` images from Zot registry
 
+## Other Agents
+
+| Agent | ID | Role | Interaction |
+|-------|----|------|-------------|
+| **Morty** | `morty` | Ops sub-agent — config audit, manifest fixes | Spawn as sub-agent |
+| **Dyson** | `dyson` | Sub-agent with heartbeat | Spawn as sub-agent |
+| **Robert** | `robert` | Cron reviewer — session analysis, workspace PRs | Autonomous, review his PRs |
+
 ## Sub-Agent Patterns
 
 Spawn sub-agents for tasks that may outlive the current session:
