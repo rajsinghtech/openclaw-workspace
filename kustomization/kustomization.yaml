@@ -11,6 +11,7 @@ resources:
   - secret.sops.yaml
   - ts-oauth.yaml
   - pull-secret.yaml
+  - pvc.yaml
 configMapGenerator:
   - name: openclaw-config
     files:
