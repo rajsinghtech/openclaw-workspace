@@ -31,7 +31,7 @@
       },
       "anthropic": {
         "baseUrl": "https://api.anthropic.com",
-        "apiKey": "${ANTHROPIC_API_KEY}",
+        "apiKey": "$${ANTHROPIC_API_KEY}",
         "api": "anthropic-messages",
         "models": [
           {
@@ -45,7 +45,7 @@
       },
       "nvidia": {
         "baseUrl": "https://integrate.api.nvidia.com/v1",
-        "apiKey": "${NVIDIA_API_KEY}",
+        "apiKey": "$${NVIDIA_API_KEY}",
         "api": "openai-completions",
         "models": [
           {
