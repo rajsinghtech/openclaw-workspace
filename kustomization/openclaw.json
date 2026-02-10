@@ -30,6 +30,9 @@
         ]
       },
       "anthropic": {
+        "baseUrl": "https://api.anthropic.com",
+        "apiKey": "${ANTHROPIC_API_KEY}",
+        "api": "anthropic-messages",
         "models": [
           {
             "id": "claude-opus-4-6",
