@@ -10,7 +10,7 @@ This deployment runs as a single-replica Deployment with three containers plus t
 Pod: openclaw
   initContainers:
     sysctler        -> enables IP forwarding for Tailscale
-    init-workspace  -> copies workspace content from OCI ImageVolume to emptyDir
+    init-workspace  -> copies workspace content from OCI ImageVolume to data PVC
   containers:
     openclaw        -> OpenClaw server (oci.killinit.cc/openclaw/openclaw:latest)
     tailscale       -> Tailscale sidecar for mesh networking
@@ -27,9 +27,9 @@ Pod: openclaw
 | `llama-cpp` | `Qwen3-Coder-Next` | Local model via Tailscale egress |
 
 **Volumes:**
-- `data` (emptyDir) -> mounted at `/home/node/.openclaw/` — runtime state, wiped on restart
+- `data` (PVC: openclaw-data) -> mounted at `/home/node/.openclaw/` — persistent state, persists across restarts
 - `workspace` (ImageVolume) -> OCI image `oci.killinit.cc/openclaw/workspace:latest` mounted read-only at `/opt/workspace`
-- `config` (ConfigMap) -> `openclaw-config` mounted at `/opt/config`, copied to emptyDir by init container
+- `config` (ConfigMap) -> `openclaw-config` mounted at `/opt/config`, copied during init
 
 **Networking:**
 - Service `openclaw-main` on port 18789
