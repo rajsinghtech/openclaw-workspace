@@ -27,9 +27,10 @@ GitHub Actions ──► Zot Registry ──► Flux ──► Kubernetes
 ```
 .github/workflows/      # CI builds
 kustomization/          # K8s manifests (Flux-managed)
-workspace/              # Skills + configs → workspace image
-Dockerfile.openclaw     # Agent image
-Dockerfile.workspace    # Content-only image
+workspaces/main/        # Main agent workspace (skills, docs, persona)
+workspaces/morty/       # Morty ops sub-agent workspace
+Dockerfile.openclaw     # Agent image (runtime + CLI tools)
+Dockerfile.workspace    # Content-only image (both workspaces)
 ```
 
 ## Build Notes

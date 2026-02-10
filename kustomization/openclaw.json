@@ -62,7 +62,7 @@
   },
   "agents": {
     "defaults": {
-      "workspace": "/home/node/.openclaw/workspace",
+      "workspace": "/home/node/.openclaw/workspaces/main",
       "model": {
         "primary": "nvidia/moonshotai/kimi-k2.5"
       },
@@ -84,16 +84,6 @@
           "sessionMemory": true
         },
         "sources": ["memory", "sessions"]
-      },
-      "heartbeat": {
-        "every": "30m",
-        "model": "nvidia/moonshotai/kimi-k2.5",
-        "target": "discord",
-        "activeHours": {
-          "start": "08:00",
-          "end": "23:00",
-          "timezone": "America/New_York"
-        }
       }
     },
     "list": [
@@ -108,20 +98,32 @@
           "primary": "nvidia/moonshotai/kimi-k2.5"
         },
         "subagents": {
-          "allowAgents": ["claw-manager"]
+          "allowAgents": ["morty"]
+        },
+        "heartbeat": {
+          "every": "30m",
+          "model": "nvidia/moonshotai/kimi-k2.5",
+          "target": "discord",
+          "activeHours": {
+            "start": "08:00",
+            "end": "23:00",
+            "timezone": "America/New_York"
+          }
         }
       },
       {
-        "id": "claw-manager",
+        "id": "morty",
         "identity": {
-          "name": "Claw Manager",
-          "emoji": "🦞"
+          "name": "Morty",
+          "emoji": "🔧"
         },
+        "workspace": "/home/node/.openclaw/workspaces/morty",
         "model": {
           "primary": "nvidia/moonshotai/kimi-k2.5"
         },
         "subagents": {
-          "allowAgents": ["*"]
+          "model": "llama-cpp/Qwen3-Coder-Next",
+          "allowAgents": ["main"]
         }
       }
     ]

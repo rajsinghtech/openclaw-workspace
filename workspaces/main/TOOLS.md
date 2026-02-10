@@ -13,6 +13,37 @@ Skills are higher-level knowledge packages that build on the CLI tools below. Ch
 
 Use skills first for common tasks — they encode tested diagnostic sequences and known gotchas.
 
+## gh
+
+GitHub CLI. Authenticated as `rajsinghtechbot` via GITHUB_TOKEN env var.
+
+```bash
+# Check CI runs
+gh run list --repo rajsinghtech/openclaw-workspace --limit 5
+gh run view <run-id> --repo rajsinghtech/openclaw-workspace
+gh run watch <run-id> --repo rajsinghtech/openclaw-workspace
+
+# Clone and push
+gh repo clone rajsinghtech/openclaw-workspace -- /tmp/workspace-edit
+
+# Issues and PRs
+gh issue list --repo rajsinghtech/openclaw-workspace
+gh pr list --repo rajsinghtech/openclaw-workspace
+gh pr create --title "..." --body "..."
+```
+
+## git
+
+Authenticated via credential helper using GITHUB_TOKEN. Commits as `rajsinghtechbot <king360raj@gmail.com>`.
+
+```bash
+git clone https://github.com/rajsinghtech/openclaw-workspace.git /tmp/workspace-edit
+# make changes...
+git add <files>
+git commit -m "description"
+git push
+```
+
 ## kubectl
 
 Kubernetes cluster management. In-cluster config is automatic.

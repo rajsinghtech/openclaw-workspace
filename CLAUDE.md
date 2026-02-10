@@ -7,7 +7,7 @@ This repo contains two independently built artifacts plus Kubernetes manifests:
 ### Images
 - **`oci.killinit.cc/openclaw/openclaw`** — Custom OpenClaw image with CLI tools baked in
   - Base: `ghcr.io/openclaw/openclaw:2026.2.6` (already multi-arch amd64+arm64)
-  - Tools: kubectl, flux, helm, kustomize, yq, sops, jq (versions pinned as Dockerfile ARGs)
+  - Tools: kubectl, flux, helm, kustomize, yq, sops, jq, gh (versions pinned as Dockerfile ARGs)
   - Multi-stage Dockerfile: `debian:bookworm-slim` downloads tools, then COPY into upstream
   - Workflow: `.github/workflows/build-openclaw.yaml`
   - Triggers on: `Dockerfile.openclaw` or workflow changes
@@ -17,7 +17,7 @@ This repo contains two independently built artifacts plus Kubernetes manifests:
   - Pure content image (`FROM scratch`)
   - Built from `Dockerfile.workspace`
   - Workflow: `.github/workflows/build-workspace.yaml`
-  - Triggers on: `workspace/**`, `Dockerfile.workspace`, or workflow changes
+  - Triggers on: `workspaces/**`, `Dockerfile.workspace`, or workflow changes
 
 ### Kubernetes (`kustomization/`)
 - Raw manifests managed by Flux via GitRepository source
@@ -48,8 +48,9 @@ crane index append → multi-arch manifest
 
 | Path | Purpose |
 |------|---------|
-| `/home/node/.openclaw/` | Runtime state dir (emptyDir, fresh each restart) |
-| `/home/node/.openclaw/workspace/` | Workspace content (copied from OCI ImageVolume) |
+| `/home/node/.openclaw/` | Runtime state dir (5Gi Ceph PVC, persists across restarts) |
+| `/home/node/.openclaw/workspaces/main/` | Main agent workspace (refreshed from OCI image on start) |
+| `/home/node/.openclaw/workspaces/morty/` | Morty ops agent workspace (refreshed from OCI image on start) |
 | `/home/node/.openclaw/clawdbot.json` | Config (copied from ConfigMap by init container, writable) |
 | `/usr/local/bin/` | CLI tools (baked into openclaw image) |
 
@@ -57,5 +58,7 @@ crane index append → multi-arch manifest
 
 - Tailscale sidecar with ephemeral auth, POD_NAME as hostname
 - Workspace content delivered via Kubernetes ImageVolume (`pullPolicy: Always`)
-- Config copied to emptyDir by init container (must be writable for OpenClaw auto-config)
+- Config copied to PVC by init container (must be writable for OpenClaw auto-config)
+- 5Gi Ceph RBD PVC for persistent agent state
+- Two agents: main (OpenClaw) and morty (ops sub-agent)
 - Single replica, Recreate strategy

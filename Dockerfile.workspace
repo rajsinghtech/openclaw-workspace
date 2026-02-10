@@ -1,2 +1,2 @@
 FROM scratch
-COPY workspace/ /workspace/
+COPY workspaces/ /workspaces/
