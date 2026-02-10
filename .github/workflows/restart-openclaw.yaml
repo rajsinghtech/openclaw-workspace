@@ -31,13 +31,31 @@ jobs:
         uses: tailscale/github-action@v4
         with:
           oauth-client-id: TbqNGJkY5611CNTRL-kz4CwX2LK721CNTRL
-          audience: api.tailscale.com/TbqNGJkY5611CNTRL-kz4CwX2LK721CNTRL
+          audience: api.tailscale.com/TbqNGJkY5611CNTRL-kz4CwX2KL721CNTRL
           tags: tag:ci
           args: --accept-dns
 
       - name: Reconcile and restart
         run: |
           sudo tailscale configure kubeconfig ottawa-k8s-operator.keiretsu.ts.net
-          sudo env "PATH=$PATH" flux reconcile kustomization openclaw -n flux-system --with-source
-          sudo kubectl rollout restart deployment openclaw -n openclaw
-          sudo kubectl rollout status deployment openclaw -n openclaw --timeout=120s
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          flux reconcile kustomization openclaw -n flux-system --with-source
+          kubectl rollout restart deployment openclaw -n openclaw
+
+      - name: Wait for rollout with health check
+        timeout-minutes: 5
+        run: |
+          kubectl rollout status deployment openclaw -n openclaw --timeout=300s
+          kubectl wait pod -l app.kubernetes.io/name=openclaw -n openclaw --for=condition=ready --timeout=60s
+
+      - name: Verify health
+        run: |
+          kubectl get pods -n openclaw
+          kubectl get deployment openclaw -n openclaw
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "Rollout failed, rolling back..."
+          kubectl rollout undo deployment openclaw -n openclaw || true
+          kubectl rollout status deployment openclaw -n openclaw --timeout=300s || true
