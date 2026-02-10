@@ -42,6 +42,21 @@
             "maxTokens": 32000
           }
         ]
+      },
+      "nvidia": {
+        "baseUrl": "https://integrate.api.nvidia.com/v1",
+        "apiKey": "${NVIDIA_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "moonshotai/kimi-k2.5",
+            "name": "Kimi K2.5",
+            "input": ["text"],
+            "contextWindow": 131072,
+            "maxTokens": 16384,
+            "reasoning": true
+          }
+        ]
       }
     }
   },
