@@ -37,11 +37,17 @@ spec:
               set -e
               echo "[init-workspace] Copying workspace template..."
               cp -a /opt/workspace/workspace /home/node/.openclaw/workspace
-              echo "[init-workspace] Copying config..."
-              cp /opt/config/openclaw.json /home/node/.openclaw/clawdbot.json
+              echo "[init-workspace] Substituting env vars in config..."
+              sed \
+                -e "s|\${NVIDIA_API_KEY}|${NVIDIA_API_KEY}|g" \
+                -e "s|\${ANTHROPIC_API_KEY}|${ANTHROPIC_API_KEY}|g" \
+                /opt/config/openclaw.json > /home/node/.openclaw/clawdbot.json
               echo "[init-workspace] Fixing ownership..."
               chown -R 1000:1000 /home/node/.openclaw
               echo "[init-workspace] Done"
+          envFrom:
+            - secretRef:
+                name: openclaw-secrets
           volumeMounts:
             - name: data
               mountPath: /home/node/.openclaw
