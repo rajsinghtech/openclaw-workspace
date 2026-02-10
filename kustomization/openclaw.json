@@ -63,6 +63,10 @@
   "agents": {
     "defaults": {
       "workspace": "/home/node/.openclaw/workspaces/main",
+      "repoRoot": "/home/node/.openclaw",
+      "sandbox": {
+        "scope": "agent"
+      },
       "model": {
         "primary": "nvidia/moonshotai/kimi-k2.5"
       },
@@ -75,7 +79,8 @@
       "compaction": {
         "memoryFlush": {
           "enabled": true,
-          "softThresholdTokens": 4000
+          "softThresholdTokens": 4000,
+          "hardThresholdTokens": 8000
         }
       },
       "memorySearch": {
@@ -135,10 +140,11 @@
   "logging": {
     "level": "info",
     "consoleStyle": "compact",
-    "redactSensitive": "tools"
+    "redactSensitive": "tools",
+    "file": "/home/node/.openclaw/openclaw.log"
   },
   "tools": {
-    "profile": "full",
+    "profile": "restricted",
     "agentToAgent": {
       "enabled": true
     },
