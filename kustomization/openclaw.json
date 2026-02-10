@@ -139,6 +139,9 @@
   },
   "tools": {
     "profile": "full",
+    "agentToAgent": {
+      "enabled": true
+    },
     "web": {
       "search": {
         "enabled": true,
