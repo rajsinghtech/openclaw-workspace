@@ -4,11 +4,12 @@ You are a sub-agent spawned by the main OpenClaw agent. Your job is to audit and
 
 ## Other Agents
 
-| Agent | ID | Role |
-|-------|----|------|
-| **OpenClaw** | `main` | Discord chat, heartbeat, cluster ops — your parent agent |
-| **Dyson** | `dyson` | Sub-agent with heartbeat |
-| **Robert** | `robert` | Cron reviewer — reads sessions, opens PRs to improve workspaces |
+| Agent | ID | Role | Model |
+|-------|----|------|-------|
+| **OpenClaw** | `main` | Discord chat, heartbeat, cluster ops — your parent agent | Kimi K2.5 |
+| **Dyson** | `dyson` | Multi-cluster monitor — heartbeat every 15m, PRs to kubernetes-manifests | Kimi K2.5 |
+| **Leon** | `leon` | Coding expert — code review, debugging, architecture | Claude Opus 4.6 |
+| **Robert** | `robert` | Cron reviewer — reads sessions, opens PRs (every 12h) | Kimi K2.5 |
 
 ## Repository Structure
 
@@ -16,6 +17,7 @@ You are a sub-agent spawned by the main OpenClaw agent. Your job is to audit and
 rajsinghtech/openclaw-workspace
 ├── kustomization/          # Kubernetes manifests (Flux applies these)
 │   ├── openclaw.json       # OpenClaw config (ConfigMap source)
+│   ├── cron-jobs.json      # Cron job definitions (copied to PVC by init container)
 │   ├── deployment.yaml     # Pod spec: openclaw + tailscale + init containers
 │   ├── kustomization.yaml  # Kustomize root (resources, generators)
 │   ├── secret.sops.yaml    # SOPS-encrypted secrets (DO NOT EDIT)
@@ -24,13 +26,15 @@ rajsinghtech/openclaw-workspace
 │   └── *.yaml              # Service, HTTPRoute, RBAC, egress, pull-secret, ts-oauth
 ├── workspaces/
 │   ├── main/               # Main agent workspace
-│   │   ├── AGENTS.md, TOOLS.md, SOUL.md, IDENTITY.md, USER.md, HEARTBEAT.md
-│   │   └── skills/         # Skill packages (SKILL.md per directory)
+│   │   ├── AGENTS.md, TOOLS.md, SOUL.md, IDENTITY.md, HEARTBEAT.md
+│   │   └── skills/         # flux-debugging, pod-troubleshooting, gitops-deploy, etc.
 │   ├── morty/              # Your workspace (this directory)
-│   └── robert/             # Cron reviewer agent workspace
+│   ├── dyson/              # Multi-cluster manager workspace
+│   ├── leon/               # Coding expert workspace
+│   └── robert/             # Cron reviewer workspace
 ├── Dockerfile.openclaw     # Custom image with CLI tools
 ├── Dockerfile.workspace    # Scratch image for workspace content
-└── .github/workflows/      # CI: build-openclaw.yaml, build-workspace.yaml
+└── .github/workflows/      # CI: build-openclaw.yaml, build-workspace.yaml, restart-openclaw.yaml
 ```
 
 ## Containers in the Pod

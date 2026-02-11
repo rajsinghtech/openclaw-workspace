@@ -183,7 +183,9 @@
         },
         "subagents": {
           "allowAgents": []
-        }
+        },
+        "timeoutSeconds": 1800,
+        "maxConcurrent": 1
       },
       {
         "id": "leon",

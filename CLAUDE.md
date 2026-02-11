@@ -6,7 +6,7 @@ This repo contains two independently built artifacts plus Kubernetes manifests:
 
 ### Images
 - **`oci.killinit.cc/openclaw/openclaw`** — Custom OpenClaw image with CLI tools baked in
-  - Base: `ghcr.io/openclaw/openclaw:2026.2.6` (already multi-arch amd64+arm64)
+  - Base: `ghcr.io/openclaw/openclaw:2026.2.9` (already multi-arch amd64+arm64)
   - Tools: kubectl, flux, helm, kustomize, yq, sops, jq, gh (versions pinned as Dockerfile ARGs)
   - Multi-stage Dockerfile: `debian:bookworm-slim` downloads tools, then COPY into upstream
   - Workflow: `.github/workflows/build-openclaw.yaml`
@@ -51,7 +51,11 @@ crane index append → multi-arch manifest
 | `/home/node/.openclaw/` | Runtime state dir (5Gi Ceph PVC, persists across restarts) |
 | `/home/node/.openclaw/workspaces/main/` | Main agent workspace (refreshed from OCI image on start) |
 | `/home/node/.openclaw/workspaces/morty/` | Morty ops agent workspace (refreshed from OCI image on start) |
+| `/home/node/.openclaw/workspaces/dyson/` | Dyson multi-cluster manager workspace |
+| `/home/node/.openclaw/workspaces/leon/` | Leon coding expert workspace |
+| `/home/node/.openclaw/workspaces/robert/` | Robert cron reviewer workspace |
 | `/home/node/.openclaw/clawdbot.json` | Config (copied from ConfigMap by init container, writable) |
+| `/home/node/.openclaw/cron/jobs.json` | Cron job definitions (copied from ConfigMap by init container) |
 | `/usr/local/bin/` | CLI tools (baked into openclaw image) |
 
 ## Deployment
@@ -60,5 +64,5 @@ crane index append → multi-arch manifest
 - Workspace content delivered via Kubernetes ImageVolume (`pullPolicy: Always`)
 - Config copied to PVC by init container (must be writable for OpenClaw auto-config)
 - 5Gi Ceph RBD PVC for persistent agent state
-- Two agents: main (OpenClaw) and morty (ops sub-agent)
+- Five agents: main (OpenClaw), morty (ops), dyson (multi-cluster), leon (coding), robert (cron reviewer)
 - Single replica, Recreate strategy

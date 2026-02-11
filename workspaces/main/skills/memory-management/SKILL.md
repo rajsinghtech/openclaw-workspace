@@ -1,6 +1,6 @@
 ---
 name: Memory Management
-description: Session memory and context management best practices
+description: Context hygiene, memory flush before compaction, sub-agent lifecycle, and daily operations patterns. Use when context is growing large or switching between tasks.
 requires: []
 ---
 

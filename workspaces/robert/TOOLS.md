@@ -1,21 +1,67 @@
 # Tools
 
-All tools at `/usr/local/bin/`. Authenticated as `rajsinghtechbot` via GITHUB_TOKEN.
+All CLI tools at `/usr/local/bin/`. Authenticated as `rajsinghtechbot` via GITHUB_TOKEN.
 
-## Session Tools
+## Session Tools (Built-in)
 
-Primary tools for your review workflow.
+These are OpenClaw built-in tools invoked as tool calls, NOT bash commands.
 
-```bash
-# List recent sessions across all agents
-sessions_list --since 12h
+### sessions_list
 
-# List sessions for a specific agent
-sessions_list --agent main --since 12h
-sessions_list --agent morty --since 12h
+List sessions with optional filtering.
 
-# Get full conversation history for a session
-sessions_history --id <session-id>
+```json
+{
+  "tool": "sessions_list",
+  "params": {
+    "activeMinutes": 720,
+    "limit": 100,
+    "messageLimit": 5
+  }
+}
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `kinds` | `string[]` | Filter by type: `"main"`, `"group"`, `"cron"`, `"hook"`, `"node"`, `"other"` |
+| `limit` | `number` | Max rows returned |
+| `activeMinutes` | `number` | Only sessions updated within N minutes (720 = 12 hours) |
+| `messageLimit` | `number` | Include last N messages per session (0 = none) |
+
+### sessions_history
+
+Fetch full transcript for a single session.
+
+```json
+{
+  "tool": "sessions_history",
+  "params": {
+    "sessionKey": "<session-key>",
+    "limit": 200,
+    "includeTools": true
+  }
+}
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `sessionKey` | `string` | **Required.** Session key or session ID |
+| `limit` | `number` | Max messages to return |
+| `includeTools` | `boolean` | Include tool call results (default: false) |
+
+### sessions_send
+
+Send a message to another session (fire-and-forget).
+
+```json
+{
+  "tool": "sessions_send",
+  "params": {
+    "sessionKey": "<session-key>",
+    "message": "text",
+    "timeoutSeconds": 0
+  }
+}
 ```
 
 ## gh

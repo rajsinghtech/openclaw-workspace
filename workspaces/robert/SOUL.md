@@ -17,12 +17,14 @@ Each run follows four phases:
 
 Collect session data from the last 12 hours across all agents.
 
-```bash
-# List recent sessions
-sessions_list --since 12h
+Use the built-in `sessions_list` and `sessions_history` tools (these are OpenClaw tool calls, not bash commands):
 
-# For each session with errors or retries, pull full history
-sessions_history --id <session-id>
+```json
+// List recent sessions (updated within last 720 minutes = 12 hours)
+{ "tool": "sessions_list", "params": { "activeMinutes": 720, "limit": 100, "messageLimit": 5 } }
+
+// Get full history for a specific session
+{ "tool": "sessions_history", "params": { "sessionKey": "<session-key>", "limit": 200, "includeTools": true } }
 ```
 
 Focus on:
@@ -115,6 +117,15 @@ gh pr create \
 - abc123 (2025-01-15 14:23 ET)
 - def456 (2025-01-15 16:45 ET)
 ```
+
+## Memory
+
+Update `MEMORY.md` with:
+- New failure patterns you observe recurring across sessions
+- Session tool usage tips that save time
+- PR deduplication rules you've learned
+
+Don't log per-run findings — those go in PR descriptions.
 
 ## Clean Runs
 

@@ -1,6 +1,6 @@
 ---
 name: Session Review
-description: Analyze agent session history for failures, retries, and knowledge gaps
+description: Analyze agent sessions for tool failures, retry patterns, knowledge gaps, context limits, and config drift. Covers sessions_list/sessions_history tool call syntax and error categorization.
 requires: []
 ---
 
@@ -8,19 +8,30 @@ requires: []
 
 ## Gathering Sessions
 
-```bash
-# All sessions from the last 12 hours
-sessions_list --since 12h
+Use the built-in `sessions_list` and `sessions_history` tools (OpenClaw tool calls, NOT bash commands).
 
-# Filter by agent
-sessions_list --agent main --since 12h
-sessions_list --agent morty --since 12h
+### List recent sessions
+
+```json
+{ "tool": "sessions_list", "params": { "activeMinutes": 720, "limit": 100, "messageLimit": 5 } }
 ```
 
-For each session, pull the full history:
-```bash
-sessions_history --id <session-id>
+- `activeMinutes: 720` = last 12 hours
+- `messageLimit: 5` = include last 5 messages per session for quick triage
+- Use `kinds` to filter: `["main", "group", "cron", "hook"]`
+
+### Get full session transcript
+
+```json
+{ "tool": "sessions_history", "params": { "sessionKey": "<key>", "limit": 200, "includeTools": true } }
 ```
+
+- Set `includeTools: true` to see tool call results (where errors appear)
+- Increase `limit` for long sessions
+
+### Agents to review
+
+Check sessions for ALL agents: **main**, **morty**, **dyson**, **leon**.
 
 ## Error Patterns to Detect
 
@@ -63,7 +74,7 @@ For each finding, record:
 | Field | Value |
 |-------|-------|
 | Session ID | `<id>` |
-| Agent | `main` / `morty` |
+| Agent | `main` / `morty` / `dyson` / `leon` |
 | Timestamp | When the error occurred |
 | Category | `tool-failure` / `retry` / `knowledge-gap` / `stale-docs` / `missing-skill` / `config-drift` |
 | Severity | `breaking` / `misleading` / `enhancement` |
@@ -81,8 +92,10 @@ For each finding, record:
 After analysis, produce a summary:
 ```
 Sessions analyzed: N
-- main: X sessions
-- morty: Y sessions
+- main: W sessions
+- morty: X sessions
+- dyson: Y sessions
+- leon: Z sessions
 
 Findings:
 1. [breaking] Container name mismatch — AGENTS.md says "main", should be "openclaw" (sessions: abc123, def456)

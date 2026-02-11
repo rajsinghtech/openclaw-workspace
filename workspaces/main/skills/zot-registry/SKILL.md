@@ -1,6 +1,6 @@
 ---
 name: Zot Registry
-description: OCI registry operations with Zot (oci.killinit.cc)
+description: OCI registry operations — image inspection, push troubleshooting, multi-arch manifests, pull secret verification. Use for "manifest invalid", ImagePullBackOff, or stale image issues.
 requires: [kubectl]
 ---
 

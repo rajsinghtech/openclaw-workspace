@@ -1,7 +1,8 @@
 ---
 name: GitOps Deploy
-description: End-to-end deployment workflow for OpenClaw via Flux
+description: End-to-end deployment workflow — commit, CI, Flux reconcile, pod restart, verify. Includes ConfigMap changes, Flux postBuild escaping, and SOPS secret management.
 requires: [kubectl, flux, sops]
+disable-model-invocation: true
 ---
 
 # GitOps Deploy

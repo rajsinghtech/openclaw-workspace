@@ -19,6 +19,12 @@ rajsinghtech/openclaw-workspace
 │   ├── morty/              # Ops sub-agent — config audit, manifest fixes
 │   │   ├── AGENTS.md, TOOLS.md, SOUL.md, IDENTITY.md
 │   │   └── skills/         # config-audit, manifest-lint, ci-diagnosis
+│   ├── dyson/              # Multi-cluster manager — heartbeat + PRs
+│   │   ├── AGENTS.md, TOOLS.md, SOUL.md, IDENTITY.md, HEARTBEAT.md
+│   │   └── skills/         # cluster-health, flux-ops, storage-ops, pr-workflow
+│   ├── leon/               # Coding expert — code review, debugging
+│   │   ├── AGENTS.md, TOOLS.md, SOUL.md, IDENTITY.md, HEARTBEAT.md
+│   │   └── skills/         # code-review, debug-troubleshooting, architecture-design, testing-strategies
 │   └── robert/             # Your workspace (this directory)
 │       ├── AGENTS.md, TOOLS.md, SOUL.md, IDENTITY.md
 │       └── skills/         # session-review, workspace-improvement
@@ -29,11 +35,13 @@ rajsinghtech/openclaw-workspace
 
 ## Other Agents
 
-| Agent | ID | Role | Relationship |
-|-------|----|------|-------------|
-| **OpenClaw** | `main` | Discord chat, heartbeat, cluster ops | You review his sessions |
-| **Morty** | `morty` | Ops sub-agent for main — audits, fixes, pushes | You review his sessions |
-| **Robert** | `robert` | That's you — cron reviewer | Independent, no parent |
+| Agent | ID | Role | Model | Relationship |
+|-------|----|------|-------|-------------|
+| **OpenClaw** | `main` | Discord chat, heartbeat, cluster ops | Kimi K2.5 | You review his sessions |
+| **Morty** | `morty` | Ops sub-agent — audits, fixes, pushes | Kimi K2.5 | You review his sessions |
+| **Dyson** | `dyson` | Multi-cluster monitor, heartbeat every 15m | Kimi K2.5 | You review his sessions |
+| **Leon** | `leon` | Coding expert — code review, debugging, architecture | Claude Opus 4.6 | You review his sessions |
+| **Robert** | `robert` | That's you — cron reviewer | Kimi K2.5 | Independent, no parent |
 
 ## Git Workflow
 
@@ -60,19 +68,19 @@ gh pr create --title "<type>: <description>" --body "..."
 
 **Never push to main.** Always branch + PR.
 
-## Session Tools
+## Session Tools (Built-in)
 
-```bash
-# List all sessions (recent first)
-sessions_list --since 12h
+These are OpenClaw built-in tool calls, NOT bash commands. See TOOLS.md for full parameter reference.
 
-# Get full history for a session
-sessions_history --id <session-id>
+```json
+// List sessions from last 12 hours
+{ "tool": "sessions_list", "params": { "activeMinutes": 720, "limit": 100, "messageLimit": 5 } }
 
-# Filter by agent
-sessions_list --agent main --since 12h
-sessions_list --agent morty --since 12h
+// Get full transcript for a session
+{ "tool": "sessions_history", "params": { "sessionKey": "<key>", "limit": 200, "includeTools": true } }
 ```
+
+Review sessions for ALL agents: main, morty, dyson, leon.
 
 ## What to Review
 

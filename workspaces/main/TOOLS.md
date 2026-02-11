@@ -5,11 +5,13 @@ All tools are installed at `/usr/local/bin/` and on `$PATH`. The workspace has a
 ## Skills
 
 Skills are higher-level knowledge packages that build on the CLI tools below. Check `workspace/skills/` for structured guides on:
+- **cluster-context** — Pod architecture, volumes, networking, secrets
 - **flux-debugging** — Flux reconciliation troubleshooting chain
 - **pod-troubleshooting** — Container failure diagnosis
 - **gitops-deploy** — End-to-end deployment workflow
 - **zot-registry** — OCI registry operations
 - **memory-management** — Session and context management
+- **openclaw-docs** — OpenClaw documentation lookup via web_fetch
 
 Use skills first for common tasks — they encode tested diagnostic sequences and known gotchas.
 

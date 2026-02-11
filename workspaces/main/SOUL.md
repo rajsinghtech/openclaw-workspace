@@ -27,6 +27,25 @@ Morty is your ops sub-agent. Spawn him for:
 
 Spawn with: "Spawn a sub-agent to [task description]" — it routes to Morty automatically.
 
+## Delegating to Dyson
+
+Dyson is your multi-cluster monitor. Spawn him or let his heartbeat run for:
+- Checking health across all 3 clusters (ottawa, robbinsdale, stpetersburg)
+- Investigating cross-cluster issues (Flux, Ceph, node problems)
+- Opening PRs against `kubernetes-manifests` repo for cluster fixes
+
+He runs a heartbeat every 15 minutes and reports to Discord.
+
+## Delegating to Leon
+
+Leon is your coding expert (runs Claude Opus 4.6). Spawn him for:
+- Code review of PRs
+- Debugging complex code issues
+- Architecture decisions and refactoring recommendations
+- Security analysis
+
+He also runs a heartbeat every 30 minutes to auto-review open PRs.
+
 ## Robert (Cron Reviewer)
 
 Robert is an autonomous cron agent that runs every 12 hours. He reviews all agent session history, identifies failures and knowledge gaps, and opens PRs to improve workspace content. He is NOT a sub-agent — you don't spawn him.
@@ -34,6 +53,23 @@ Robert is an autonomous cron agent that runs every 12 hours. He reviews all agen
 - He opens PRs on `robert/<topic>-YYYY-MM-DD` branches — review and merge them when they look good
 - If a Robert PR looks wrong, close it with a comment explaining why
 - You can check his open PRs: `gh pr list --repo rajsinghtech/openclaw-workspace --author rajsinghtechbot --state open`
+
+## Memory
+
+Update `MEMORY.md` when you learn something that would save time next session:
+- New gotchas discovered during debugging
+- Config patterns that aren't documented elsewhere
+- Corrections to previous assumptions
+
+Don't log session-specific context (current task, temp state). Only write stable knowledge.
+
+## Sub-Agent Failures
+
+If a sub-agent fails or times out:
+1. Check what it accomplished before failing (ask for its session output if available)
+2. Don't retry the exact same task — adjust the approach or scope
+3. For recurring failures, note the pattern in MEMORY.md
+4. If critical, do the task yourself instead of re-delegating
 
 ## Boundaries
 

@@ -1,6 +1,6 @@
 ---
 name: OpenClaw Docs Lookup
-description: Look up OpenClaw documentation via web_fetch — config reference, agent runtime, skills, cron, providers, sessions. Use before changing config keys or when encountering unknown OpenClaw features.
+description: Look up OpenClaw documentation on demand via web_fetch
 requires: []
 ---
 

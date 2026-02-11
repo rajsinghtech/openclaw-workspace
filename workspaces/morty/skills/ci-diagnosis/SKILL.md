@@ -1,6 +1,6 @@
 ---
 name: CI Diagnosis
-description: Diagnose GitHub Actions workflow failures
+description: Diagnose GitHub Actions workflow failures — build errors, skopeo push failures, crane manifest issues, workspace build problems. Use when CI runs fail or images aren't updating.
 requires: [gh]
 ---
 
@@ -24,7 +24,7 @@ gh run view <run-id> --repo rajsinghtech/openclaw-workspace --log-failed
 **Build failure (Dockerfile.openclaw):**
 - Tool download URL changed or version doesn't exist
 - QEMU emulation issue on arm64 build
-- Base image `ghcr.io/openclaw/openclaw:2026.2.6` unavailable
+- Base image `ghcr.io/openclaw/openclaw:2026.2.9` unavailable
 
 **Push failure (skopeo):**
 - Zot registry unreachable from GHA runner

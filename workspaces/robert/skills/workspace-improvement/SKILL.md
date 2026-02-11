@@ -1,6 +1,6 @@
 ---
 name: Workspace Improvement
-description: Cross-reference workspace docs against live deployment and open PRs for fixes
+description: Cross-reference workspace docs against live deployment — container names, volume mounts, model providers, agent list, skill dirs. Includes PR creation workflow with validation and deduplication.
 requires: [gh, git, kubectl, jq, yq]
 ---
 

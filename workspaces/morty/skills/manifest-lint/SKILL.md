@@ -1,6 +1,6 @@
 ---
 name: Manifest Lint
-description: Validate Kubernetes manifests and kustomize output
+description: Validate kustomize build, cross-reference resources, check container names, volume mounts, and ConfigMap generators. Use after editing any file in kustomization/.
 requires: [kustomize, yq, jq]
 ---
 
