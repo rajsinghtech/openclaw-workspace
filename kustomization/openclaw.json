@@ -102,7 +102,7 @@
         "default": true,
         "identity": {
           "name": "OpenClaw",
-          "emoji": "🦞"
+          "emoji": "\ud83e\udd9e"
         },
         "model": {
           "primary": "nvidia/moonshotai/kimi-k2.5"
@@ -112,7 +112,8 @@
             "main",
             "morty",
             "dyson",
-            "robert"
+            "robert",
+            "leon"
           ]
         },
         "heartbeat": {
@@ -130,7 +131,7 @@
         "id": "morty",
         "identity": {
           "name": "Morty",
-          "emoji": "🔧"
+          "emoji": "\ud83d\udd27"
         },
         "workspace": "/home/node/.openclaw/workspaces/morty",
         "model": {
@@ -147,7 +148,7 @@
         "id": "dyson",
         "identity": {
           "name": "Dyson",
-          "emoji": "🌀"
+          "emoji": "\ud83c\udf00"
         },
         "workspace": "/home/node/.openclaw/workspaces/dyson",
         "model": {
@@ -174,7 +175,7 @@
         "id": "robert",
         "identity": {
           "name": "Robert",
-          "emoji": "📋"
+          "emoji": "\ud83d\udccb"
         },
         "workspace": "/home/node/.openclaw/workspaces/robert",
         "model": {
@@ -182,6 +183,32 @@
         },
         "subagents": {
           "allowAgents": []
+        }
+      },
+      {
+        "id": "leon",
+        "identity": {
+          "name": "Leon",
+          "emoji": "\ud83d\udcbb"
+        },
+        "workspace": "/home/node/.openclaw/workspaces/leon",
+        "model": {
+          "primary": "anthropic/claude-opus-4-6"
+        },
+        "subagents": {
+          "allowAgents": [
+            "main"
+          ]
+        },
+        "heartbeat": {
+          "every": "30m",
+          "model": "anthropic/claude-opus-4-6",
+          "target": "discord",
+          "activeHours": {
+            "start": "08:00",
+            "end": "22:00",
+            "timezone": "America/New_York"
+          }
         }
       }
     ]
