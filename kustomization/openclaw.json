@@ -112,7 +112,8 @@
             "main",
             "morty",
             "dyson",
-            "robert"
+            "robert",
+            "leon"
           ]
         },
         "heartbeat": {
@@ -179,6 +180,20 @@
         "workspace": "/home/node/.openclaw/workspaces/robert",
         "model": {
           "primary": "nvidia/moonshotai/kimi-k2.5"
+        },
+        "subagents": {
+          "allowAgents": []
+        }
+      },
+      {
+        "id": "leon",
+        "identity": {
+          "name": "🐍 Leon",
+          "emoji": "🐍"
+        },
+        "workspace": "/home/node/.openclaw/workspaces/leon",
+        "model": {
+          "primary": "anthropic/claude-opus-4-6"
         },
         "subagents": {
           "allowAgents": []
