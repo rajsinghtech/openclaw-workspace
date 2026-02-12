@@ -1,10 +1,41 @@
 ---
 name: Workspace Improvement
-description: Cross-reference workspace docs against live deployment — container names, volume mounts, model providers, agent list, skill dirs. Includes PR creation workflow with validation and deduplication.
+description: >
+  Cross-reference workspace docs against live deployment — container names,
+  volume mounts, model providers, agent list, skill directories. Includes
+  PR creation workflow with validation and deduplication.
+
+  Use when: You have findings from session-review that need to be fixed,
+  workspace docs may be stale, or you need to verify workspace accuracy
+  against the live cluster. Also use after a deployment change to ensure
+  docs stay in sync.
+
+  Don't use when: You haven't done a session review yet (do that first with
+  session-review). Don't use for live debugging (use the appropriate
+  troubleshooting skill). Don't use for changes to kubernetes-manifests
+  repo (Dyson's pr-workflow handles that).
+
+  Outputs: Pull request(s) on rajsinghtech/openclaw-workspace with validated
+  fixes to workspace docs, skills, or config. Max 2 PRs per run.
 requires: [gh, git, kubectl, jq, yq]
 ---
 
 # Workspace Improvement
+
+## Routing
+
+### Use This Skill When
+- You have session-review findings that need workspace fixes
+- Verifying workspace docs match the live deployment
+- Updating stale container names, model lists, or path references
+- Adding missing skills identified from session patterns
+- Periodic workspace accuracy audit
+
+### Don't Use This Skill When
+- You haven't reviewed sessions yet → use **session-review** first
+- The fix is in kubernetes-manifests, not openclaw-workspace → use Dyson's **pr-workflow**
+- Debugging a live issue → use the appropriate troubleshooting skill
+- The change is config (openclaw.json), not docs → be careful — config changes affect runtime
 
 ## Cross-Reference Checks
 
@@ -96,10 +127,14 @@ Skip if an open PR already addresses the same issue.
 ### 2. Clone and Branch
 
 ```bash
+# Always clean up stale clones — leftover state causes confusion
+rm -rf /tmp/robert-review
 git clone https://github.com/rajsinghtech/openclaw-workspace.git /tmp/robert-review
 cd /tmp/robert-review
 git checkout -b robert/<topic>-$(date +%Y-%m-%d)
 ```
+
+⚠️ **Always `rm -rf` before cloning.** Previous session clones will have wrong branches and stale state.
 
 ### 3. Make Changes
 
@@ -143,3 +178,41 @@ gh pr create \
 - `docs:` — updates stale or missing documentation
 - `feat:` — adds new skill or capability
 - `chore:` — cleanup, formatting, no behavior change
+
+## PR Body Template
+
+```markdown
+## Findings
+
+<Evidence from session review or cross-reference check>
+
+## Changes
+
+| File | Change |
+|------|--------|
+| `workspaces/<agent>/AGENTS.md` | <what changed> |
+| `workspaces/<agent>/skills/<skill>/SKILL.md` | <what changed> |
+
+## Sessions Referenced
+
+<Session IDs where issues were observed, or "cross-reference check" if from audit>
+
+## Validation
+
+- [ ] No JSON/YAML syntax errors introduced
+- [ ] Changes are factually correct (verified against live state)
+- [ ] No duplicate PR exists for these changes
+```
+
+## Rules
+
+- **Max 2 PRs per run** — avoid review fatigue
+- **Check for duplicates** — always `gh pr list` before creating
+- **Minimal changes** — fix only what's broken, don't refactor unrelated content
+- **Include evidence** — every change needs a reason (session ID or audit finding)
+
+## Security Notes
+
+- Don't include raw session content with secrets or credentials in PR bodies
+- Don't modify SOPS files — escalate to user
+- Be careful editing config files — syntax errors crash the agent

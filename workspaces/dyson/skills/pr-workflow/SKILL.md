@@ -1,20 +1,59 @@
 ---
 name: PR Workflow
-description: Clone kubernetes-manifests, branch, fix, validate, and open a PR
+description: >
+  Clone kubernetes-manifests, branch, fix, validate, and open a PR.
+
+  Use when: You've identified an issue in the kubernetes-manifests repo that
+  needs fixing — resource limits, HelmRelease values, Flux kustomization
+  config, namespace labels, or any manifest change. This is the standard
+  workflow for making changes via pull request.
+
+  Don't use when: The change is in openclaw-workspace repo (that's a direct
+  push to main, not a PR to kubernetes-manifests). Don't use for diagnosing
+  issues (use cluster-health, flux-ops, or storage-ops first, then come here
+  to fix). Don't use when you're unsure what to change — diagnose first.
+
+  Outputs: A pull request on rajsinghtech/kubernetes-manifests with validated
+  changes, conventional commit message, and descriptive PR body.
 requires: []
 ---
 
 # PR Workflow
 
-Standard procedure for making changes to the `rajsinghtech/kubernetes-manifests` repo via pull request.
+## Routing
+
+### Use This Skill When
+- You've diagnosed an issue and know the fix involves kubernetes-manifests
+- Increasing resource limits for a crashing pod
+- Fixing HelmRelease values or version bumps
+- Fixing Flux kustomization config (paths, dependencies, substitution vars)
+- Adding/modifying namespace labels or annotations
+- Someone says "open a PR to fix this"
+
+### Don't Use This Skill When
+- The change is to openclaw-workspace repo → commit directly to main
+- You haven't diagnosed the issue yet → use **cluster-health**, **flux-ops**, or **storage-ops** first
+- You're only inspecting/reading manifests → just use `kubectl` or clone and read
+- The issue is with CI workflows → those live in openclaw-workspace, not kubernetes-manifests
+
+## Pre-Flight
+
+Before starting, check for duplicate PRs:
+```bash
+gh pr list --repo rajsinghtech/kubernetes-manifests --state open
+```
+If an open PR already addresses this issue, comment on it instead of creating a new one.
 
 ## Setup
 
 ```bash
-# Clone fresh
+# Always clean up stale clones first — leftover state from previous sessions causes confusion
+rm -rf /tmp/k8s-manifests
 git clone https://github.com/rajsinghtech/kubernetes-manifests.git /tmp/k8s-manifests
 cd /tmp/k8s-manifests
 ```
+
+⚠️ **Always `rm -rf` before cloning.** Stale clones from previous sessions will have the wrong branch, uncommitted changes, or outdated refs.
 
 ## Branch Naming
 
@@ -30,7 +69,7 @@ Use conventional branch names:
 git checkout -b fix/ottawa-coredns-memory-limit
 ```
 
-## Common Fix Patterns
+## Common Fix Templates
 
 ### Resource Limits
 ```yaml
@@ -126,6 +165,26 @@ EOF
 )"
 ```
 
+## PR Body Template
+
+```markdown
+## Problem
+<What's broken and evidence (pod status, error message, alert)>
+
+## Fix
+<What was changed and why this specific value/config>
+
+## Affected
+- Cluster: <cluster name>
+- Namespace: <namespace>
+- Resource: <kind/name>
+
+## Validation
+- [ ] YAML syntax valid (`yq .`)
+- [ ] Kustomize build passes (if applicable)
+- [ ] No unrelated changes included
+```
+
 ## Report Back
 
 After creating the PR, report:
@@ -141,3 +200,10 @@ Files changed: apps/kube-system/coredns/deployment.yaml
 - **Never skip validation** — kustomize build must pass
 - **One concern per PR** — don't mix unrelated fixes
 - **Include context** — PR body must explain the problem, fix, and affected resources
+- **Check for duplicates first** — `gh pr list --repo rajsinghtech/kubernetes-manifests --state open`
+
+## Edge Cases
+
+- **Multiple clusters need the same fix:** One PR per cluster, or one PR if the file is shared
+- **Fix requires SOPS changes:** Dyson cannot modify SOPS — escalate to user
+- **Unsure about the right value:** State your reasoning in the PR body and request review

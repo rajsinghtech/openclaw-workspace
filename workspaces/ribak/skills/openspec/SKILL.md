@@ -1,6 +1,43 @@
+---
+name: OpenSpec Workflow
+description: >
+  Spec-driven development workflow — proposals, requirements, design docs,
+  task breakdowns, and handoff patterns using the OpenSpec framework.
+
+  Use when: Starting a new feature or change that needs planning, someone
+  says "I want to build X", creating proposals or specs, breaking down
+  requirements into tasks, or handing off from planning to implementation.
+
+  Don't use when: Implementing code changes (hand off to Leon). Don't use
+  for debugging or troubleshooting (use appropriate troubleshooting skill).
+  Don't use for Kubernetes manifest changes (use pr-workflow). Don't use
+  for reviewing existing code (use code-review).
+
+  Outputs: OpenSpec change folder with proposal.md, specs/, design.md,
+  and tasks.md. Handoff artifact for implementation agent.
+requires: []
+---
+
 # OpenSpec Skill
 
 Document templates and workflow patterns for spec-driven development.
+
+## Routing
+
+### Use This Skill When
+- Starting a new feature or change that needs planning
+- Someone says "I want to build X" or "let's add Y"
+- Creating proposals, requirements, or design documents
+- Breaking down a feature into implementable tasks
+- Handing off planned work to Leon for implementation
+- Running `/opsx:new`, `/opsx:ff`, `/opsx:apply`, or `/opsx:archive`
+
+### Don't Use This Skill When
+- Implementing the actual code → hand off to **Leon**
+- Debugging a runtime issue → use the appropriate troubleshooting skill
+- Changing Kubernetes manifests → use **pr-workflow** (dyson)
+- Reviewing a PR → use **code-review** (leon)
+- The task is small enough to just do without a spec → skip planning
 
 ## Philosophy
 
@@ -298,3 +335,17 @@ Apply to planning documents:
 | `/opsx:archive`* | Archive folder | complete |
 
 *Ribak manages the handoff, actual spawn/archiving is done via main agent returning from sub-agent.
+
+## Edge Cases
+
+- **Scope creep during planning:** If requirements keep expanding, pause and re-scope with Raj before continuing
+- **Brownfield conflicts:** If the proposed design conflicts with existing architecture, document the conflict in design.md and flag it
+- **Handoff to Leon fails:** If Leon can't be spawned, write the handoff artifact to `/tmp/outputs/openspec-handoff.md` and report back
+- **Multiple concurrent changes:** Each change gets its own folder — don't mix changes in the same spec
+
+## Compaction Notes
+
+For long planning sessions:
+- `mkdir -p /tmp/outputs` before writing any artifacts
+- Write each document (proposal, specs, design, tasks) to disk as you go
+- The OpenSpec folder structure itself serves as persistent state — commit early

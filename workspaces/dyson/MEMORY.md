@@ -20,3 +20,10 @@ Curated knowledge from cluster monitoring sessions. Update when you discover new
 - Branch: `fix/<cluster>-<issue>` or `feat/<scope>-<description>`
 - Always `gh pr list` before creating — avoid duplicate PRs
 - Never push to main directly
+
+## Skill Design Patterns
+
+- Skill descriptions function as routing logic — include "Use when" and "Don't use when"
+- cluster-health vs flux-ops vs storage-ops: negative examples clarify which to pick
+- Write per-cluster findings to `/tmp/outputs/` during long scans to survive compaction
+- Health report templates belong inside the skill, not in the system prompt
