@@ -102,7 +102,7 @@
         "default": true,
         "identity": {
           "name": "OpenClaw",
-          "emoji": "\ud83e\udd9e"
+          "emoji": "🦞"
         },
         "model": {
           "primary": "nvidia/moonshotai/kimi-k2.5"
@@ -113,7 +113,8 @@
             "morty",
             "dyson",
             "robert",
-            "leon"
+            "leon",
+            "ribak"
           ]
         },
         "heartbeat": {
@@ -131,7 +132,7 @@
         "id": "morty",
         "identity": {
           "name": "Morty",
-          "emoji": "\ud83d\udd27"
+          "emoji": "🔧"
         },
         "workspace": "/home/node/.openclaw/workspaces/morty",
         "model": {
@@ -148,7 +149,7 @@
         "id": "dyson",
         "identity": {
           "name": "Dyson",
-          "emoji": "\ud83c\udf00"
+          "emoji": "🌀"
         },
         "workspace": "/home/node/.openclaw/workspaces/dyson",
         "model": {
@@ -175,7 +176,7 @@
         "id": "robert",
         "identity": {
           "name": "Robert",
-          "emoji": "\ud83d\udccb"
+          "emoji": "📋"
         },
         "workspace": "/home/node/.openclaw/workspaces/robert",
         "model": {
@@ -189,7 +190,7 @@
         "id": "leon",
         "identity": {
           "name": "Leon",
-          "emoji": "\ud83d\udcbb"
+          "emoji": "💻"
         },
         "workspace": "/home/node/.openclaw/workspaces/leon",
         "model": {
@@ -209,6 +210,22 @@
             "end": "22:00",
             "timezone": "America/New_York"
           }
+        }
+      },
+      {
+        "id": "ribak",
+        "identity": {
+          "name": "Ribak",
+          "emoji": "📋"
+        },
+        "workspace": "/home/node/.openclaw/workspaces/ribak",
+        "model": {
+          "primary": "nvidia/moonshotai/kimi-k2.5"
+        },
+        "subagents": {
+          "allowAgents": [
+            "leon"
+          ]
         }
       }
     ]
