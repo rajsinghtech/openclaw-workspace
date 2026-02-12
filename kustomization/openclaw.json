@@ -1,5 +1,4 @@
 {
-  "_comment": "NOTE: All ${VAR} patterns use $$ escaping for Flux CD compatibility. At runtime, OpenClaw sees ${VAR} and substitutes the actual env var value. See CONFIG.md for details.",
   "gateway": {
     "port": 18789,
     "mode": "local",
