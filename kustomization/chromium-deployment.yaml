@@ -23,74 +23,78 @@ spec:
         app.kubernetes.io/part-of: openclaw
     spec:
       containers:
-        - name: chromium
-          image: zenika/alpine-chrome:124
-          imagePullPolicy: IfNotPresent
-          command:
-            - chromium-browser
-          args:
-            - --headless=new
-            - --disable-gpu
-            - --disable-software-rasterizer
-            - --no-sandbox
-            - --disable-dev-shm-usage
-            - --disable-background-networking
-            - --disable-crashpad
-            - --remote-debugging-address=0.0.0.0
-            - --remote-debugging-port=9222
-            - --user-data-dir=/tmp/chromium
-          env:
-            - name: XDG_CACHE_HOME
-              value: /tmp
-          ports:
-            - name: cdp
-              containerPort: 9222
-              protocol: TCP
-          resources:
-            requests:
-              cpu: 100m
-              memory: 256Mi
-            limits:
-              cpu: "1"
-              memory: 1Gi
-          securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
-            runAsNonRoot: true
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop:
-                - ALL
-          volumeMounts:
-            - name: tmp
-              mountPath: /tmp
-            - name: dev-shm
-              mountPath: /dev/shm
-          livenessProbe:
-            tcpSocket:
-              port: 9222
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            failureThreshold: 6
-            timeoutSeconds: 5
-          readinessProbe:
-            tcpSocket:
-              port: 9222
-            initialDelaySeconds: 5
-            periodSeconds: 10
-          startupProbe:
-            tcpSocket:
-              port: 9222
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            failureThreshold: 12
-            timeoutSeconds: 5
-          terminationGracePeriodSeconds: 30
-      volumes:
+      - name: chromium
+        image: zenika/alpine-chrome:124
+        imagePullPolicy: IfNotPresent
+        command:
+        - chromium-browser
+        args:
+        - --headless=new
+        - --disable-gpu
+        - --disable-software-rasterizer
+        - --no-sandbox
+        - --disable-dev-shm-usage
+        - --disable-background-networking
+        - --crash-dumps-dir=/tmp/crashes
+        - --remote-debugging-address=0.0.0.0
+        - --remote-debugging-port=9222
+        - --user-data-dir=/tmp/chromium
+        env:
+        - name: XDG_CACHE_HOME
+          value: /tmp
+        ports:
+        - name: cdp
+          containerPort: 9222
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: "1"
+            memory: 1Gi
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
         - name: tmp
-          emptyDir: {}
+          mountPath: /tmp
         - name: dev-shm
-          emptyDir:
-            medium: Memory
-            sizeLimit: 256Mi
+          mountPath: /dev/shm
+        - name: crash-dumps
+          mountPath: /tmp/crashes
+        livenessProbe:
+          tcpSocket:
+            port: 9222
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          failureThreshold: 6
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: 9222
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        startupProbe:
+          tcpSocket:
+            port: 9222
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 12
+          timeoutSeconds: 5
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: dev-shm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 256Mi
+      - name: crash-dumps
+        emptyDir: {}
