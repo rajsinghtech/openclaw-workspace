@@ -25,6 +25,8 @@ requires: [kubectl, flux, sops]
 
 ## Routing
 
+**Note:** This skill has `disable-model-invocation: true` — it won't be auto-invoked by the model. Reference it manually when needed.
+
 ### Use This Skill When
 - Deploying config changes to the OpenClaw pod
 - Pushing workspace file updates that need to go live
@@ -85,8 +87,10 @@ The deployment uses `:latest` tags. Kubernetes won't re-pull unless the pod rest
 
 ```bash
 kubectl rollout restart deployment openclaw -n openclaw
-kubectl rollout status deployment openclaw -n openclaw
+kubectl rollout status deployment openclaw -n openclaw  # Wait for this to complete!
 ```
+
+⚠️ **Wait for `rollout status` to report success before checking logs.** The new pod needs 10-30s to start. Checking too early shows the old pod's logs.
 
 ### 5. Verify
 

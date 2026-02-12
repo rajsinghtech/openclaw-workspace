@@ -36,13 +36,24 @@ requires: []
 - You're only inspecting/reading manifests → just use `kubectl` or clone and read
 - The issue is with CI workflows → those live in openclaw-workspace, not kubernetes-manifests
 
+## Pre-Flight
+
+Before starting, check for duplicate PRs:
+```bash
+gh pr list --repo rajsinghtech/kubernetes-manifests --state open
+```
+If an open PR already addresses this issue, comment on it instead of creating a new one.
+
 ## Setup
 
 ```bash
-# Clone fresh
+# Always clean up stale clones first — leftover state from previous sessions causes confusion
+rm -rf /tmp/k8s-manifests
 git clone https://github.com/rajsinghtech/kubernetes-manifests.git /tmp/k8s-manifests
 cd /tmp/k8s-manifests
 ```
+
+⚠️ **Always `rm -rf` before cloning.** Stale clones from previous sessions will have the wrong branch, uncommitted changes, or outdated refs.
 
 ## Branch Naming
 

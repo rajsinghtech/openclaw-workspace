@@ -86,6 +86,12 @@ flux reconcile kustomization openclaw-workspace --with-source --force
 - **Reconciliation succeeds but changes not visible:** The ConfigMap changed but pod didn't restart — config requires pod restart (init container copies on startup)
 - **Intermittent failures:** Network issues between cluster and GitHub — check source-controller logs for transient errors
 - **"dependency not ready" loop:** Two kustomizations depending on each other — check for circular dependencies
+- **`flux reconcile` hangs or times out:** Flux controllers themselves may be unhealthy — always check controller pods first:
+  ```bash
+  kubectl get pods -n flux-system
+  kubectl logs -n flux-system deploy/kustomize-controller --tail=20
+  kubectl logs -n flux-system deploy/source-controller --tail=20
+  ```
 
 ## Security Notes
 
@@ -95,7 +101,7 @@ flux reconcile kustomization openclaw-workspace --with-source --force
 
 ## Compaction Notes
 
-For long Flux debugging sessions, write intermediate findings to `/tmp/outputs/flux-debug.md`:
+For long Flux debugging sessions, `mkdir -p /tmp/outputs` then write intermediate findings to `/tmp/outputs/flux-debug.md`:
 - Which sources were checked and their status
 - Which kustomizations are failing and why
 - What remediation was attempted

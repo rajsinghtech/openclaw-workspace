@@ -71,7 +71,7 @@ When context is getting large and compaction is imminent, flush important state 
 - Update any tracking documents
 - Log decisions and their rationale
 
-**Standard flush locations:**
+**Standard flush locations** (`mkdir -p /tmp/outputs` first):
 - `/tmp/outputs/<task>.md` — temporary task artifacts
 - `workspaces/<agent>/MEMORY.md` — persistent learned knowledge
 - Workspace skill files — if you learned something about a skill's domain

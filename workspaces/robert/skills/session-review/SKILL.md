@@ -122,7 +122,7 @@ For each finding, record:
 
 ## Output Template
 
-Write findings to `/tmp/outputs/session-review.md`:
+`mkdir -p /tmp/outputs` then write findings to `/tmp/outputs/session-review.md`:
 
 ```markdown
 # Session Review Report
@@ -160,6 +160,7 @@ Write findings to `/tmp/outputs/session-review.md`:
 ## Compaction Notes
 
 Session review can be long. To survive compaction:
+- `mkdir -p /tmp/outputs` before writing any artifacts
 - Write findings to `/tmp/outputs/session-review.md` as you go
 - Process one agent at a time, writing findings before moving to the next
 - Keep a running tally of sessions analyzed and findings count

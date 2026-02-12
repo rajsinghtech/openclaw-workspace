@@ -41,6 +41,16 @@ requires: []
 
 Storage diagnostics for all 3 clusters. Ottawa and Robbinsdale run Rook-Ceph; StPetersburg uses local-path-provisioner.
 
+## Cluster Contexts
+
+⚠️ **Always use `--context <ctx>`** — never rely on current-context.
+
+| Cluster | Context | Storage |
+|---------|---------|---------|
+| Ottawa | `talos-ottawa` | Rook-Ceph |
+| Robbinsdale | `talos-robbinsdale` | Rook-Ceph |
+| StPetersburg | `talos-stpetersburg` | local-path-provisioner |
+
 ## Rook-Ceph (Ottawa + Robbinsdale)
 
 ### Cluster Health
@@ -146,4 +156,6 @@ kubectl --context talos-stpetersburg get configmap -n local-path-storage local-p
 
 ## Artifact Handoff
 
-For complex storage investigations, write findings to `/tmp/outputs/storage-diagnosis.md` including Ceph status, OSD state, and pool usage snapshots.
+For complex storage investigations:
+- `mkdir -p /tmp/outputs` before writing any artifacts
+- Write findings to `/tmp/outputs/storage-diagnosis.md` including Ceph status, OSD state, and pool usage snapshots.

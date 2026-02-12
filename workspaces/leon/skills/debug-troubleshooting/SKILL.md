@@ -136,6 +136,7 @@ kubectl logs -l app.kubernetes.io/name=openclaw -n openclaw -c openclaw --tail=5
 ## Compaction Notes
 
 For long debugging sessions:
+- `mkdir -p /tmp/outputs` before writing any artifacts
 - Write intermediate findings to `/tmp/outputs/debug-notes.md` as you go
 - Record hypotheses tested and eliminated — don't re-test after compaction
 - Commit the root cause analysis once found

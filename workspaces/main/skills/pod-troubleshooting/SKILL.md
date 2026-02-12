@@ -126,6 +126,7 @@ When the issue can't be resolved and needs human intervention:
 ## Compaction Notes
 
 If debugging across a long session:
+- `mkdir -p /tmp/outputs` before writing any artifacts
 - Write findings to `/tmp/outputs/pod-debug.md` after each diagnostic step
 - Record which containers you've checked and what you found
 - This prevents re-running the same commands after context compaction

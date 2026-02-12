@@ -162,4 +162,4 @@ Checked: syntax valid, no security concerns, follows conventions.
 
 ## Artifact Handoff
 
-Write detailed review findings to `/tmp/outputs/review-<pr-number>.md` when the review is complex or needs to be referenced later by other agents.
+`mkdir -p /tmp/outputs` then write detailed review findings to `/tmp/outputs/review-<pr-number>.md` when the review is complex or needs to be referenced later by other agents.

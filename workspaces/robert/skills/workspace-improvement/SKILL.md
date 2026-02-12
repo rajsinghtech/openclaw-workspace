@@ -127,10 +127,14 @@ Skip if an open PR already addresses the same issue.
 ### 2. Clone and Branch
 
 ```bash
+# Always clean up stale clones — leftover state causes confusion
+rm -rf /tmp/robert-review
 git clone https://github.com/rajsinghtech/openclaw-workspace.git /tmp/robert-review
 cd /tmp/robert-review
 git checkout -b robert/<topic>-$(date +%Y-%m-%d)
 ```
+
+⚠️ **Always `rm -rf` before cloning.** Previous session clones will have wrong branches and stale state.
 
 ### 3. Make Changes
 

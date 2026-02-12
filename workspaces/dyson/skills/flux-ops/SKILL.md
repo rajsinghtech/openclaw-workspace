@@ -38,6 +38,16 @@ requires: []
 - Ceph/storage is the issue → use **storage-ops**
 - You need a full health scan (nodes, pods, certs, etc.) → use **cluster-health**
 
+## Cluster Contexts
+
+⚠️ **Always use `--context <ctx>`** — never rely on current-context.
+
+| Cluster | Context |
+|---------|---------|
+| Ottawa | `talos-ottawa` |
+| Robbinsdale | `talos-robbinsdale` |
+| StPetersburg | `talos-stpetersburg` |
+
 ## Diagnostic Chain
 
 Run these in order to trace Flux issues from source to workload:
@@ -147,7 +157,9 @@ kubectl --context <ctx> logs -n flux-system deploy/helm-controller --tail=20
 
 ## Compaction Notes
 
-When checking Flux across all 3 clusters, write per-cluster findings to `/tmp/outputs/flux-status-<cluster>.md` to preserve state across compaction boundaries.
+When checking Flux across all 3 clusters:
+- `mkdir -p /tmp/outputs` before writing any artifacts
+- Write per-cluster findings to `/tmp/outputs/flux-status-<cluster>.md` to preserve state across compaction boundaries.
 
 ## Security Notes
 

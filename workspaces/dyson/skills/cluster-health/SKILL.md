@@ -37,6 +37,16 @@ requires: []
 
 Comprehensive health check across talos-ottawa, talos-robbinsdale, and talos-stpetersburg.
 
+## Cluster Contexts
+
+⚠️ **Always use `--context <ctx>`** — never rely on current-context, it may not be what you expect.
+
+| Cluster | Context |
+|---------|---------|
+| Ottawa | `talos-ottawa` |
+| Robbinsdale | `talos-robbinsdale` |
+| StPetersburg | `talos-stpetersburg` |
+
 ## Procedure
 
 Run for each context in `talos-ottawa talos-robbinsdale talos-stpetersburg`:
@@ -149,6 +159,7 @@ Overall: 2 issues found across 3 clusters
 ## Compaction Notes
 
 Health scans produce large output. For long monitoring sessions:
+- `mkdir -p /tmp/outputs` before writing any artifacts
 - Write each cluster's results to `/tmp/outputs/health-<cluster>-<date>.md`
 - Summarize findings in the report template above
 - Only keep actionable items in context — healthy clusters need one line, not full output
