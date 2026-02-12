@@ -252,6 +252,16 @@
       }
     }
   },
+  "plugins": {
+    "entries": {
+      "discord": {
+        "enabled": true
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
   "tools": {
     "profile": "full",
     "agentToAgent": {
