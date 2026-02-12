@@ -200,16 +200,6 @@
           "allowAgents": [
             "main"
           ]
-        },
-        "heartbeat": {
-          "every": "30m",
-          "model": "anthropic/claude-opus-4-6",
-          "target": "discord",
-          "activeHours": {
-            "start": "08:00",
-            "end": "22:00",
-            "timezone": "America/New_York"
-          }
         }
       },
       {
