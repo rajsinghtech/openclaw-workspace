@@ -259,9 +259,7 @@
     },
     "web": {
       "search": {
-        "enabled": false,
-        "_provider_disabled": "brave",
-        "_note": "Brave API disabled — using Chromium browser for web access"
+        "enabled": false
       },
       "fetch": {
         "enabled": true
