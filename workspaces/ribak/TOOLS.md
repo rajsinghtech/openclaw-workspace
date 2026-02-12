@@ -2,57 +2,79 @@
 
 All tools at `/usr/local/bin/`. Authenticated as `rajsinghtechbot` via GITHUB_TOKEN.
 
-## Schema Validation
+## OpenSpec Workflow
 
 ```bash
-# Validate OpenAPI 3.x spec
-spectral lint openapi.yaml
+# Create a new change folder
+mkdir -p openspec/changes/<change-name>
+cd openspec/changes/<change-name>
 
-# Validate JSON Schema
-jq . schema.json > /dev/null
-
-# Convert YAML to JSON for validation
-yq -o json spec.yaml > spec.json
+# Generate planning documents structure
+# (Ribak uses write/edit to create these, not a CLI tool)
 ```
 
-## Code Generation
+## Document Generation
 
 ```bash
-# Generate client from OpenAPI
-openapi-generator generate -i openapi.yaml -g <language> -o ./output
+# Create planning directory structure
+mkdir -p openspec/changes/<change-name>/specs
 
-# Available generators
-openapi-generator list
+# Create initial files
+touch openspec/changes/<change-name>/proposal.md
+touch openspec/changes/<change-name>/design.md
+touch openspec/changes/<change-name>/tasks.md
+touch openspec/changes/<change-name>/specs/requirements.md
+touch openspec/changes/<change-name>/specs/scenarios.md
+```
+
+## Project Discovery
+
+```bash
+# List existing OpenSpec changes
+ls -la openspec/changes/ 2>/dev/null || echo "No OpenSpec changes yet"
+
+# Check for active changes (not in archive)
+find openspec/changes/ -maxdepth 1 -type d ! -name archive ! -path '*/changes' 2>/dev/null
+
+# View archived changes
+ls -la openspec/changes/archive/ 2>/dev/null || echo "No archived changes"
 ```
 
 ## gh
 
 ```bash
-# Clone repos
-gh repo clone rajsinghtech/<repo>.git -- /tmp/spec-review
+# Clone repos for planning context
+gh repo clone rajsinghtech/<repo>.git -- /tmp/planning-context
 
-# Review PRs with spec changes
-gh pr diff <number> --repo rajsinghtech/<repo>
-gh pr view <number> --repo rajsinghtech/<repo>
+# Review existing PRs for context
+gh pr list --repo rajsinghtech/<repo> --limit 10
 
-# Comment on PRs
-gh pr comment <number> --body "..." --repo rajsinghtech/<repo>
+# Check related issues
+gh issue list --repo rajsinghtech/<repo> --limit 10
 ```
 
 ## git
 
 ```bash
-git clone https://github.com/rajsinghtech/<repo>.git /tmp/spec-review
-git diff HEAD~1 -- '*.yaml' '*.yml' '*.json'
-git log --oneline -10 --all -- '*.yaml' '*.yml'
+# Clone for context
+git clone https://github.com/rajsinghtech/<repo>.git /tmp/planning-context
+
+# Check existing patterns in codebase
+git ls-files '*.md' | grep -E '(SPEC|spec|design|proposal)' | head -20
+
+# Review recent changes for context
+git log --oneline -10
 ```
 
 ## External Tools
 
-- `web_fetch` — Fetch OpenSpec/Landlord reference docs
-- `web_search` — Find API design patterns, OpenAPI best practices
-- `read` — Read spec files
-- `image` — Analyze API diagrams if provided
+| Tool | Purpose |
+|------|---------|
+| `web_fetch` | Fetch OpenSpec/Landlord reference docs for patterns |
+| `web_search` | Find design patterns, best practices for spec problems |
+| `read` | Read existing codebase for context during planning |
+| `write` | Create planning documents |
+| `edit` | Update planning documents iteratively |
 
 ## Ribak-Specific Skills
 
@@ -60,4 +82,17 @@ Located in `/home/node/.openclaw/workspaces/ribak/skills/`:
 
 | Skill | Purpose |
 |-------|---------|
-| `openspec/` | OpenAPI validation, JSON Schema, spec patterns |
+| `openspec/` | OpenSpec workflow patterns, document templates, spec examples |
+
+## Handoff to Leon
+
+```bash
+# Signal to main agent to spawn Leon with context
+# (This is done via returning from the sub-agent, not direct spawn)
+```
+
+Typical handoff includes:
+- Path to `tasks.md` for implementation
+- Path to `specs/` for requirements reference
+- Path to `design.md` for technical approach
+- Any risks or gotchas discovered

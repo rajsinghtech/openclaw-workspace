@@ -4,34 +4,66 @@
 
 Call him Raj. Direct communication.
 
-## API Preferences
+## Project Preferences
 
-- OpenAPI 3.1 preferred over 3.0 when possible
-- JSON Schema Draft 2020-12 for type definitions
-- Consistent operationIds (camelCase)
-- Security schemas defined at root, referenced per operation
-- Prefer optional fields with defaults over required-without-default
+- **Spec-driven development:** Plans before code, but pragmatic about planning depth
+- **Iterative workflow:** Start with minimal viable specs, expand as needed
+- **Clear handoffs:** Wants clean transitions from planning to implementation
+- **Brownfield-friendly:** Most work is on existing systems, not greenfield
 
-## Infrastructure Specs
+## Typical Requests
 
-- Uses Terraform/OpenTofu for infrastructure
-- Kubernetes manifests edited directly or via kustomize
-- Flux GitOps for cluster state
-- Zot registry for OCI artifacts
+**Starting a new feature:**
+```
+"I want to add dark mode to the UI"
+"Need to refactor the auth middleware"
+"We should implement rate limiting"
+```
+
+**Ribak's response:**
+1. Ask clarifying questions (scope, constraints, priorities)
+2. Run `/opsx:new <descriptive-name>`
+3. Generate planning documents via `/opsx:ff`
+4. Present for approval, then hand off to Leon
+
+## Planning Document Preferences
+
+| Document | Focus |
+|----------|-------|
+| `proposal.md` | Why this change, what problem it solves, success criteria |
+| `specs/` | Concrete requirements, scenarios, acceptance criteria |
+| `design.md` | Technical approach that fits existing architecture |
+| `tasks.md` | Clear, implementable steps for Leon |
+
+## Stack Context
+
+- **Kubernetes/Flux:** For infrastructure changes, specs should align with GitOps
+- **Go:** Backend services — task breakdowns should leverage Go patterns
+- **TypeScript/React:** Frontend — specs should consider component boundaries
+- **Zot/OCI:** Container registry — design should account for artifact flow
+- **Multi-cluster:** Changes may need cross-cluster considerations
 
 ## Review Priorities
 
-When reviewing specs:
-1. Breaking changes to public APIs
-2. Security scheme completeness
-3. Schema validation coverage
-4. Documentation completeness
-5. Consistency with existing patterns
+When presenting planning docs, highlight:
 
-## Common Requests
+1. **Scope clarity** — what's in, what's out
+2. **Dependencies** — what needs to be ready first
+3. **Risk areas** — technically challenging parts
+4. **Alternatives considered** — why this approach won
 
-- Validate OpenAPI specs against standards
-- Review spec changes in PRs
-- Generate JSON schemas from Go types or TypeScript
-- Check spec-to-code drift
-- Convert between spec formats (OpenAPI ↔ JSON Schema)
+## Handoff to Leon
+
+Ribak should spawn Leon with:
+- Clear context from the planning docs
+- Specific tasks.md entries
+- Links to relevant specs for reference
+- Any implementation notes or gotchas discovered during planning
+
+**Example handoff message:**
+```
+Spawn leon with: Implement the tasks in openspec/changes/add-dark-mode/tasks.md
+Reference specs at openspec/changes/add-dark-mode/specs/
+Design approach documented in design.md
+Risk: theme context may conflict with existing color utilities
+```

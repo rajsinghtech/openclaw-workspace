@@ -2,23 +2,54 @@
 
 Run these checks each heartbeat cycle. If everything is healthy, reply HEARTBEAT_OK.
 
-## OpenSpec/Landlord Repos
+## OpenSpec Repository State
 
-- Check for new issues or PRs in `Fission-AI/OpenSpec` and `jaxxstorm/landlord`
-- If significant activity (new releases, breaking changes), note in heartbeat
+- Check for active (non-archived) changes in Raj's repos:
+  - `openspec/changes/` directories
+  - Changes older than 7 days without `/opsx:apply` — may need nudging
+- If stale changes found, note in heartbeat with count and oldest date
 
-## Spec Compliance in Raj's Repos
+## Leon Handoff Tracking
 
-- Scan `rajsinghtech` repos for OpenAPI/JSON Schema files with recent changes
-- Validate any specs changed since last check
-- Report validation failures immediately
+- Check for changes with complete planning docs but no Leon spawn:
+  - `proposal.md`, `design.md`, `tasks.md` exist
+  - No corresponding Leon session found
+- Flag these as "ready for handoff" in heartbeat
 
-## Tooling State
+## OpenSpec Framework Updates
 
-- Verify `spectral` and `openapi-generator` are available
-- Check for new versions/releases of validation tools
+- Check for new releases or significant changes in `Fission-AI/OpenSpec`
+- If new workflow patterns or commands added, note in heartbeat
+- Watch for deprecations of `/opsx:*` commands
+
+## Planning Document Health
+
+- Scan Raj's repos for planning documents
+- Flag any with:
+  - Empty tasks.md (planning started, no breakdown)
+  - Missing design.md (specs without technical approach)
+  - Outdated specs (referencing removed features)
 
 ## Only Report Problems
 
-- If no new spec issues and tools are functional: reply HEARTBEAT_OK
+- If no stale changes, pending handoffs, or doc health issues: reply HEARTBEAT_OK
 - Don't repeat known issues unless status changed
+- Focus on actionable items: changes needing attention, handoffs ready
+
+## Example Healthy Report
+
+```
+HEARTBEAT_OK
+- 2 active changes (both under 3 days old)
+- 0 stale changes
+- 0 ready for Leon handoff
+- OpenSpec framework: v2.x (current)
+```
+
+## Example Attention Report
+
+```
+Changes needing attention:
+- openspec/changes/refactor-auth/ — planning complete 5 days ago, no Leon spawn
+- openspec/changes/update-ui/ — tasks.md empty, may need spec clarification
+```

@@ -1,131 +1,300 @@
----
-name: OpenSpec and API Validation
-description: Validate and design OpenAPI 3.x specifications, JSON Schema, and infrastructure-as-code specs. Reference patterns from OpenSpec and Landlord.
-requires: [spectral, openapi-generator, yq, jq]
----
+# OpenSpec Skill
 
-# OpenSpec API Specifications
+Document templates and workflow patterns for spec-driven development.
 
-This skill provides guidance for working with OpenAPI specifications, JSON Schema, and infrastructure API definitions.
+## Philosophy
 
-## References
+OpenSpec is built on these principles:
 
-- **OpenSpec**: https://github.com/Fission-AI/OpenSpec — API specification standards and validation rules
-- **Landlord**: https://github.com/jaxxstorm/landlord — Infrastructure specification examples and patterns
-
-Use these repositories as authoritative references for:
-- OpenAPI structure and validation rules
-- JSON Schema patterns
-- Code generation workflows
-- Infrastructure spec patterns
-
-## Validation Commands
-
-```bash
-# Clean OpenAPI validation with Spectral
-spectral lint openapi.yaml --ruleset .spectral.yaml
-
-# Validate JSON Schema conformance
-jq 'if .openapi then "OpenAPI doc" elif .\$schema then "JSON Schema" else "Unknown" end' spec.json
-
-# Check for breaking changes (requires openapi-diff or similar)
-# Walkthrough comparison of two specs
-yq -o json old.yaml > old.json
-yq -o json new.yaml > new.json
-diff <(jq .paths old.json | sort) <(jq .paths new.json | sort)
+```text
+→ fluid not rigid
+→ iterative not waterfall
+→ easy not complex
+→ built for brownfield not just greenfield
+→ scalable from personal projects to enterprises
 ```
 
-## Schema Generation
+Key insight: **Actions, not phases.** Commands are things you can do, not stages you're stuck in.
 
-```bash
-# Generate TypeScript from OpenAPI
-openapi-generator generate -i openapi.yaml -g typescript-fetch -o ./ts-client
+## Workflow Commands
 
-# Generate Go client from OpenAPI
-openapi-generator generate -i openapi.yaml -g go -o ./go-client
+### /opsx:new <change-name>
 
-# Generate JSON Schema from OpenAPI components
-jq '.components.schemas' openapi.yaml > schemas.json
+Creates a new change folder structure:
+
+```
+openspec/changes/<change-name>/
+├── proposal.md          # Why we're doing this
+├── specs/               # Requirements and scenarios
+│   ├── requirements.md
+│   └── scenarios.md
+├── design.md            # Technical approach
+├── tasks.md             # Implementation checklist
+└── .state               # Current workflow state
 ```
 
-## OpenAPI Structure Reference
+**When to use:** Starting any new change, feature, or fix.
 
-```yaml
-openapi: 3.1.0
-info:
-  title: API Name
-  version: 1.0.0
-  description: Clear, concise description
-servers:
-  - url: https://api.example.com/v1
-paths:
-  /resource:
-    get:
-      operationId: listResources
-      summary: List all resources
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResourceList'
-components:
-  schemas:
-    ResourceList:
-      type: array
-      items:
-        $ref: '#/components/schemas/Resource'
-    Resource:
-      type: object
-      required: [id, name]
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+### /opsx:ff (fast-forward)
+
+Generates all planning documents in sequence:
+
+1. Creates `proposal.md` — captures the "why"
+2. Creates `specs/` requirements and scenarios
+3. Creates `design.md` — technical approach
+4. Creates `tasks.md` — implementation breakdown
+5. Sets state to "ready for implementation"
+
+**When to use:** Requirements are clear enough to plan the full scope.
+
+### /opsx:apply
+
+Signals ready for implementation. Ribak's job is done; Leon takes over.
+
+**Handoff includes:**
+- Path to `tasks.md`
+- Path to `specs/` for reference
+- Path to `design.md` for technical context
+- Any risks or gotchas discovered
+
+**When to use:** Planning is complete and approved by Raj.
+
+### /opsx:archive
+
+Moves completed change to archive:
+
+```
+openspec/changes/archive/YYYY-MM-DD-<change-name>/
 ```
 
-## Validation Checklist
+Updates any merged specs in the main documentation.
 
-| Check | Tool | Command |
-|-------|------|---------|
-| Syntax | yq/jq | `yq . spec.yaml` |
-| OpenAPI validity | spectral | `spectral lint spec.yaml` |
-| Security schemes | jq | `jq '.components.securitySchemes // {}'` |
-| Operation completeness | jq | `jq '.paths[][].operationId // "missing"'` |
-| Schema coverage | jq | `jq '.components.schemas | keys'` |
+**When to use:** Leon has completed implementation and change is merged.
 
-## Common Patterns (from Landlord)
+## Document Templates
 
-- Use `operationId` for every operation (used for client generation)
-- Prefer `snake_case` for field names, `camelCase` for operationIds
-- Always include `description` for non-trivial schemas
-- Use `examples` for complex or ambiguous fields
-- Reference schemas from `#/components/schemas/` rather than inline
+### proposal.md
 
-## Error Response Pattern
+```markdown
+# Proposal: <Change Title>
 
-```yaml
-ErrorResponse:
-  type: object
-  required: [error, message]
-  properties:
-    error:
-      type: string
-      description: Machine-readable error code
-    message:
-      type: string
-      description: Human-readable error description
-    details:
-      type: object
-      description: Additional context (optional)
+## Problem
+
+What's the current situation? What problem are we solving?
+
+## Solution
+
+What are we proposing to do?
+
+## Success Criteria
+
+How do we know this worked?
+- [ ] Criterion 1
+- [ ] Criterion 2
+
+## Alternatives Considered
+
+| Alternative | Why Not Selected |
+|-------------|------------------|
+| Option A    | Reason it was rejected |
+| Option B    | Reason it was rejected |
+
+## Scope
+
+### In Scope
+- Thing 1
+- Thing 2
+
+### Out of Scope
+- Thing that sounds related but isn't included
+- Future enhancements
+
+## Risks
+
+| Risk | Mitigation |
+|------|------------|
+| Risk description | How we'll handle it |
 ```
+
+### specs/requirements.md
+
+```markdown
+# Requirements: <Change Title>
+
+## Functional Requirements
+
+| ID | Requirement | Priority | Acceptance Criteria |
+|----|-------------|----------|---------------------|
+| FR-1 | System shall do X | Must | Can verify by... |
+| FR-2 | System shall do Y | Should | Can verify by... |
+
+## Non-Functional Requirements
+
+| ID | Requirement | Target |
+|----|-------------|--------|
+| NFR-1 | Performance: operation completes within | 100ms |
+| NFR-2 | Compatibility: works with | existing API |
+
+## Constraints
+
+- Must work with existing architecture
+- Must not break backward compatibility
+- Must follow existing patterns in codebase
+```
+
+### specs/scenarios.md
+
+```markdown
+# Scenarios: <Change Title>
+
+## Happy Path
+
+**Given** initial state
+**When** user action
+**Then** expected result
+
+## Edge Cases
+
+### Edge Case 1: <Description>
+
+**Given** unusual but valid state
+**When** user action
+**Then** expected handling
+
+### Edge Case 2: <Description>
+...
+
+## Error Scenarios
+
+| Scenario | Trigger | Expected Behavior |
+|----------|---------|-------------------|
+| Invalid input | Malformed request | Return 400 with specific error |
+| Dependency down | Service unavailable | Return 503, retry logic |
+```
+
+### design.md
+
+```markdown
+# Design: <Change Title>
+
+## Overview
+
+High-level approach: what components change and how.
+
+## Architecture
+
+[Diagram or description of component interactions]
+
+### Component A
+
+- Responsibility
+- Interface changes
+- Dependencies
+
+### Component B
+
+...
+
+## Data Flow
+
+1. Step 1
+2. Step 2
+3. Step 3
+
+## Dependencies
+
+| Dependency | What we need from it |
+|------------|---------------------|
+| Package X  | Version bump, new API |
+| Service Y  | Endpoint available |
+
+## Migration Plan
+
+If this changes existing behavior:
+
+1. Phase 1: Deploy X
+2. Phase 2: Migrate Y
+3. Phase 3: Clean up Z
+
+## Testing Strategy
+
+- Unit tests for: component A, component B
+- Integration tests for: end-to-end flow
+- Manual verification: specific scenario
+```
+
+### tasks.md
+
+```markdown
+# Tasks: <Change Title>
+
+## Task Group 1: <Descriptive Name>
+
+- [ ] 1.1 Task description
+  - Notes: context for Leon
+  - Files: relevant files to modify
+  - Tests: what to verify
+
+- [ ] 1.2 Task description
+  - Depends on: 1.1
+  - Notes: implementation hints
+
+## Task Group 2: <Descriptive Name>
+
+- [ ] 2.1 Task description
+  - Notes: specific considerations
+  - Edge case: handle X
+
+## Verification
+
+- [ ] All acceptance criteria from proposal.md met
+- [ ] All scenarios from specs/scenarios.md pass
+- [ ] Code review completed
+- [ ] Tests passing
+```
+
+## Pattern from Landlord
+
+Landlord demonstrates spec-driven infrastructure patterns applicable to software:
+
+1. **Declarative desired state** — specs say what should be, not how
+2. **Workflow orchestration** — clear steps from spec to reality
+3. **State reconciliation** — actual state vs desired state
+4. **Pluggable backends** — designs that allow future flexibility
+
+Apply to planning documents:
+- `specs/` = declarative desired state (what the system should do)
+- `tasks.md` = workflow orchestration (steps to get there)
+- `design.md` = state reconciliation model (how we track progress)
+- Handoff design = pluggable implementation (Leon can vary approach)
+
+## Working with Raj
+
+**Typical flow:**
+
+1. Raj says: "I want to add dark mode"
+2. Ribak asks: "Scope questions..."
+3. Ribak runs: `/opsx:new add-dark-mode`
+4. Ribak runs: `/opsx:ff` → generates all docs
+5. Raj reviews and approves
+6. Ribak signals: `/opsx:apply` → spawns Leon
+7. Leon implements from `tasks.md`
+8. Leon signals: `/opsx:archive`
+
+**Brownfield considerations:**
+
+- Always check existing patterns in codebase
+- Note any migration steps in design.md
+- Highlight compatibility concerns in risks
+- Reference existing implementations when relevant
+
+## Command Quick Reference
+
+| Command | Creates/Updates | State After |
+|---------|-----------------|-------------|
+| `/opsx:new` | Change folder structure | proposal pending |
+| `/opsx:ff` | proposal, specs, design, tasks | ready for implementation |
+| `/opsx:apply`* | Hands off to Leon | in progress |
+| `/opsx:archive`* | Archive folder | complete |
+
+*Ribak manages the handoff, actual spawn/archiving is done via main agent returning from sub-agent.
