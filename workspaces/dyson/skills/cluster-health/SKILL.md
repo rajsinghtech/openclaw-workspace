@@ -1,10 +1,39 @@
 ---
 name: Cluster Health Scan
-description: Full multi-cluster health assessment across all 3 Kubernetes clusters
+description: >
+  Full multi-cluster health assessment across all 3 Kubernetes clusters.
+
+  Use when: Running periodic health checks, investigating cross-cluster issues,
+  or someone asks "how are the clusters doing?" Covers nodes, pods, Ceph,
+  Flux, certs, alerts, and resource utilization.
+
+  Don't use when: Debugging a specific pod failure (use pod-troubleshooting).
+  Don't use for Flux-specific reconciliation errors (use flux-ops). Don't
+  use for Ceph-specific deep dives (use storage-ops). Don't use for a
+  single cluster's issue — this skill scans ALL clusters.
+
+  Outputs: Structured health report covering all 3 clusters with issues
+  flagged and severity noted.
 requires: []
 ---
 
 # Cluster Health Scan
+
+## Routing
+
+### Use This Skill When
+- Running a scheduled or on-demand health check across all clusters
+- Someone asks "what's the cluster status?" or "any issues?"
+- Starting a monitoring session and need a baseline
+- After a maintenance window to verify everything recovered
+- Generating a health report for the heartbeat
+
+### Don't Use This Skill When
+- Debugging a specific pod (CrashLoopBackOff, etc.) → use **pod-troubleshooting**
+- Flux reconciliation failure on a specific kustomization → use **flux-ops**
+- Deep-diving into Ceph health (OSD failures, PG repair) → use **storage-ops**
+- Only one cluster needs attention → run targeted commands instead of full scan
+- Making changes to fix an issue → use **pr-workflow** for the fix
 
 Comprehensive health check across talos-ottawa, talos-robbinsdale, and talos-stpetersburg.
 
@@ -99,10 +128,11 @@ kubectl --context <ctx> exec -n monitoring deploy/kube-prometheus-stack-promethe
 - Report all firing alerts (skip Watchdog)
 - Group by severity
 
-## Output Format
+## Output Template
 
 ```
 === CLUSTER HEALTH REPORT ===
+Timestamp: <ISO timestamp>
 
 [ottawa] Nodes: 3/3 Ready | Pods: 2 unhealthy | Ceph: HEALTH_OK | Flux: OK | Alerts: 0 firing
   - [ottawa] pod kube-system/coredns-abc123: CrashLoopBackOff (OOMKilled)
@@ -115,3 +145,16 @@ kubectl --context <ctx> exec -n monitoring deploy/kube-prometheus-stack-promethe
 
 Overall: 2 issues found across 3 clusters
 ```
+
+## Compaction Notes
+
+Health scans produce large output. For long monitoring sessions:
+- Write each cluster's results to `/tmp/outputs/health-<cluster>-<date>.md`
+- Summarize findings in the report template above
+- Only keep actionable items in context — healthy clusters need one line, not full output
+
+## Edge Cases
+
+- **Metrics server down:** `kubectl top` will fail — note this as an issue, don't block the scan
+- **Ceph tools pod missing:** Can't run ceph commands — report this as a finding
+- **Prometheus not reachable:** Alert check will fail — note and continue with other checks

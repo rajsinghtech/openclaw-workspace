@@ -1,14 +1,47 @@
 ---
 name: Session Review
-description: Analyze agent sessions for tool failures, retry patterns, knowledge gaps, context limits, and config drift. Covers sessions_list/sessions_history tool call syntax and error categorization.
+description: >
+  Analyze agent sessions for tool failures, retry patterns, knowledge gaps,
+  context limits, and config drift.
+
+  Use when: Running periodic session reviews (cron), investigating agent
+  reliability issues, looking for recurring failure patterns, or identifying
+  workspace improvements from real usage. This is the primary skill for
+  Robert's review cron job.
+
+  Don't use when: You're making changes to fix issues (use
+  workspace-improvement for that). Don't use for live debugging of a
+  current issue (use the appropriate troubleshooting skill). Don't use
+  for code review of PRs (use code-review).
+
+  Outputs: Session analysis report with categorized findings (tool failures,
+  retries, knowledge gaps, config drift), severity ratings, and proposed
+  fixes. Written to /tmp/outputs/session-review.md for handoff.
 requires: []
 ---
 
 # Session Review
 
+## Routing
+
+### Use This Skill When
+- Running a periodic session review (every 12h cron)
+- Investigating why an agent struggled with a task
+- Looking for recurring failure patterns across agents
+- Identifying stale docs or missing skills from real usage
+- Someone asks "what went wrong in recent sessions?"
+
+### Don't Use This Skill When
+- You already have findings and need to open PRs → use **workspace-improvement**
+- An issue is happening right now and needs live debugging → route to the appropriate agent
+- Reviewing a PR's code quality → use **code-review** (leon)
+- Looking at cluster health, not agent sessions → use **cluster-health** (dyson)
+
 ## Gathering Sessions
 
 Use the built-in `sessions_list` and `sessions_history` tools (OpenClaw tool calls, NOT bash commands).
+
+⚠️ **These are NOT shell commands.** Do not run them with `exec`. They are OpenClaw built-in tools.
 
 ### List recent sessions
 
@@ -31,7 +64,7 @@ Use the built-in `sessions_list` and `sessions_history` tools (OpenClaw tool cal
 
 ### Agents to review
 
-Check sessions for ALL agents: **main**, **morty**, **dyson**, **leon**.
+Check sessions for ALL agents: **main**, **morty**, **dyson**, **leon**, **robert**.
 
 ## Error Patterns to Detect
 
@@ -74,7 +107,7 @@ For each finding, record:
 | Field | Value |
 |-------|-------|
 | Session ID | `<id>` |
-| Agent | `main` / `morty` / `dyson` / `leon` |
+| Agent | `main` / `morty` / `dyson` / `leon` / `robert` |
 | Timestamp | When the error occurred |
 | Category | `tool-failure` / `retry` / `knowledge-gap` / `stale-docs` / `missing-skill` / `config-drift` |
 | Severity | `breaking` / `misleading` / `enhancement` |
@@ -87,21 +120,51 @@ For each finding, record:
 - **Misleading**: Stale or incomplete info that wastes agent time (outdated model list, missing skill reference)
 - **Enhancement**: Patterns that could be encoded as skills or better docs but aren't causing failures
 
-## Output
+## Output Template
 
-After analysis, produce a summary:
+Write findings to `/tmp/outputs/session-review.md`:
+
+```markdown
+# Session Review Report
+
+**Period:** <start> to <end>
+**Sessions analyzed:** <N>
+- main: <W> sessions
+- morty: <X> sessions
+- dyson: <Y> sessions
+- leon: <Z> sessions
+- robert: <R> sessions
+
+## Findings
+
+### Breaking
+1. [tool-failure] <description> (sessions: <ids>)
+   - Evidence: <error message>
+   - Fix: <workspace change>
+
+### Misleading
+1. [stale-docs] <description> (sessions: <ids>)
+   - Evidence: <what was wrong>
+   - Fix: <doc update needed>
+
+### Enhancements
+1. [missing-skill] <description>
+   - Evidence: <pattern seen>
+   - Suggestion: <new skill or doc addition>
+
+## Proposed PRs
+1. fix: <description of change>
+2. docs: <description of doc update>
 ```
-Sessions analyzed: N
-- main: W sessions
-- morty: X sessions
-- dyson: Y sessions
-- leon: Z sessions
 
-Findings:
-1. [breaking] Container name mismatch — AGENTS.md says "main", should be "openclaw" (sessions: abc123, def456)
-2. [misleading] Model list outdated — missing nvidia provider in TOOLS.md (session: ghi789)
+## Compaction Notes
 
-Proposed PRs:
-1. fix: correct container name in main workspace docs
-2. docs: add nvidia provider to TOOLS.md quick reference
-```
+Session review can be long. To survive compaction:
+- Write findings to `/tmp/outputs/session-review.md` as you go
+- Process one agent at a time, writing findings before moving to the next
+- Keep a running tally of sessions analyzed and findings count
+
+## Security Notes
+
+- Session transcripts may contain sensitive information — don't include raw secrets or credentials in reports
+- Tool call outputs may include kubectl responses with resource details — sanitize before sharing

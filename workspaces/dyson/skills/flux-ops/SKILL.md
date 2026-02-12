@@ -1,12 +1,42 @@
 ---
 name: Flux Operations
-description: Diagnose and manage Flux CD across all clusters
+description: >
+  Diagnose and manage Flux CD across all 3 clusters (Ottawa, Robbinsdale,
+  StPetersburg). Multi-cluster Flux management including source health,
+  kustomization status, HelmRelease debugging, and reconciliation operations.
+
+  Use when: You need to check or fix Flux across multiple clusters, diagnose
+  cross-cluster Flux issues, force reconcile across all clusters, or manage
+  suspended resources. This is the multi-cluster Flux skill.
+
+  Don't use when: Debugging Flux for the OpenClaw namespace specifically
+  (main agent's flux-debugging skill handles that). Don't use for pod-level
+  issues after Flux applies successfully (use pod-troubleshooting). Don't
+  use for making code/manifest changes (use pr-workflow).
+
+  Outputs: Flux status report across all clusters, or targeted diagnosis
+  of a specific Flux failure with remediation commands.
 requires: []
 ---
 
 # Flux Operations
 
-Diagnostic and management procedures for Flux CD across talos-ottawa, talos-robbinsdale, talos-stpetersburg.
+## Routing
+
+### Use This Skill When
+- Checking Flux health across all 3 clusters
+- A kustomization or HelmRelease is failing on any cluster
+- Investigating why a GitOps change isn't being applied
+- Force-reconciling resources across clusters
+- Debugging SOPS, dependency, or source fetch issues
+- Heartbeat health check includes Flux status
+
+### Don't Use This Skill When
+- The issue is specifically the OpenClaw pod's Flux kustomization → the main agent has **flux-debugging** for that
+- A pod is crashing after Flux successfully applied → use **pod-troubleshooting**
+- You need to make manifest changes → use **pr-workflow**
+- Ceph/storage is the issue → use **storage-ops**
+- You need a full health scan (nodes, pods, certs, etc.) → use **cluster-health**
 
 ## Diagnostic Chain
 
@@ -114,3 +144,13 @@ kubectl --context <ctx> logs -n flux-system deploy/source-controller --tail=20
 kubectl --context <ctx> logs -n flux-system deploy/kustomize-controller --tail=20
 kubectl --context <ctx> logs -n flux-system deploy/helm-controller --tail=20
 ```
+
+## Compaction Notes
+
+When checking Flux across all 3 clusters, write per-cluster findings to `/tmp/outputs/flux-status-<cluster>.md` to preserve state across compaction boundaries.
+
+## Security Notes
+
+- Never expose SOPS keys or decrypted secret content in reports
+- Flux controller logs may contain sensitive resource names — sanitize before sharing
+- Suspended resources should be resumed promptly — forgotten suspensions cause drift

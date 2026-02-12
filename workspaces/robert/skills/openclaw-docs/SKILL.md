@@ -1,10 +1,41 @@
 ---
 name: OpenClaw Docs Lookup
-description: Look up OpenClaw documentation on demand via web_fetch
+description: >
+  Look up OpenClaw documentation via web_fetch — config reference, agent
+  runtime, skills, cron, providers, sessions.
+
+  Use when: You need to verify a config key, understand an OpenClaw feature,
+  or look up documentation before making changes. Always use before changing
+  config keys you're unsure about or when encountering unknown features.
+
+  Don't use when: The answer is already in your workspace files (AGENTS.md,
+  TOOLS.md, MEMORY.md, or skill files). Don't use for Kubernetes docs
+  (use kubectl --help or official k8s docs). Don't use for general web
+  searches (use web_search instead).
+
+  Outputs: Documentation content fetched via web_fetch. No persistent
+  artifacts — the information is used in-context.
 requires: []
 ---
 
 # OpenClaw Docs Lookup
+
+## Routing
+
+### Use This Skill When
+- Changing config keys and need to verify they exist
+- Adding new providers or models and need the format
+- Setting up cron jobs, hooks, or automation
+- Debugging startup failures that might be config-related
+- Encountering an OpenClaw feature you haven't seen before
+- Someone asks about OpenClaw capabilities or configuration
+
+### Don't Use This Skill When
+- The answer is in AGENTS.md, TOOLS.md, or MEMORY.md → check workspace files first
+- You need Kubernetes/kubectl documentation → use `kubectl <cmd> --help`
+- You need general information → use `web_search`
+- You already know the config key and format → just make the change
+- You're debugging pod/Flux/CI issues → use the appropriate troubleshooting skill
 
 You have access to the full OpenClaw documentation at `docs.openclaw.ai`. Use `web_fetch` to look up answers before guessing.
 
@@ -43,21 +74,7 @@ If you know the topic, go straight to the page:
 | **CLI reference** | `https://docs.openclaw.ai/cli/overview` |
 | **ClawHub (skills marketplace)** | `https://docs.openclaw.ai/tools/clawhub` |
 
-### 3. When to Look Things Up
-
-**Always check docs before:**
-- Changing config keys you're unsure about (wrong keys crash the agent)
-- Adding new providers or models
-- Modifying agent routing, session, or memory settings
-- Debugging startup failures or unexpected behavior
-- Setting up cron jobs, hooks, or automation
-
-**Use the index (`llms.txt`) when:**
-- You don't know which page covers a topic
-- The user asks about a feature you haven't seen before
-- You need to verify if a config key exists
-
-### 4. Config Schema Quick Reference
+### 3. Config Schema Quick Reference
 
 OpenClaw config (`clawdbot.json`) top-level keys:
 ```
@@ -88,7 +105,7 @@ maxConcurrent  — concurrent session limit
 
 **Common mistake:** putting agent-level keys at root level. They MUST go under `agents.defaults` or a specific agent in `agents.list`.
 
-### 5. ClawHub — Community Skills
+### 4. ClawHub — Community Skills
 
 Search and install community skills:
 ```bash

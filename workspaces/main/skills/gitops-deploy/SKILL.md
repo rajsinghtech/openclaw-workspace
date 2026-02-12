@@ -1,11 +1,45 @@
 ---
 name: GitOps Deploy
-description: End-to-end deployment workflow — commit, CI, Flux reconcile, pod restart, verify. Includes ConfigMap changes, Flux postBuild escaping, and SOPS secret management.
-requires: [kubectl, flux, sops]
+description: >
+  End-to-end deployment workflow — commit, CI, Flux reconcile, pod restart,
+  verify. Includes ConfigMap changes, Flux postBuild escaping, and SOPS
+  secret management.
+
+  Use when: You need to deploy changes to the OpenClaw pod — config updates,
+  workspace changes, image rebuilds, or secret rotations. Also use when
+  someone asks "how do I deploy this?" or "push this change live."
+
+  Don't use when: You're debugging why a deployment failed (use
+  flux-debugging or pod-troubleshooting). Don't use for changes to
+  kubernetes-manifests repo (Dyson's pr-workflow handles that). Don't use
+  for registry/image inspection (use zot-registry).
+
+  Outputs: Deployed changes verified in the running pod. Confirmation
+  includes CI status, Flux reconciliation state, pod status, and startup
+  logs.
 disable-model-invocation: true
+requires: [kubectl, flux, sops]
 ---
 
 # GitOps Deploy
+
+## Routing
+
+### Use This Skill When
+- Deploying config changes to the OpenClaw pod
+- Pushing workspace file updates that need to go live
+- Rebuilding and deploying the OpenClaw or workspace Docker image
+- Rotating or adding secrets via SOPS
+- Someone asks "deploy this" or "make this change live"
+- You just merged a PR and need to roll it out
+
+### Don't Use This Skill When
+- Flux kustomization is failing to reconcile → use **flux-debugging**
+- Pod is crashing after deployment → use **pod-troubleshooting**
+- CI build failed → use **ci-diagnosis** (morty)
+- You're inspecting images in the registry → use **zot-registry**
+- You're making changes to kubernetes-manifests repo → use **pr-workflow** (dyson)
+- You're only editing workspace docs with no need to deploy → just commit and push
 
 ## Full Deployment Flow
 
@@ -82,6 +116,13 @@ After Flux sub:    ${NVIDIA_API_KEY}   ← OpenClaw resolves this at runtime
 
 Double-dollar `$${}` tells Flux to emit a literal `${}` without substituting.
 
+**Common mistake:** Forgetting to escape after editing openclaw.json. Always grep:
+```bash
+# These should NOT exist (Flux will eat them):
+grep -n '${' kustomization/openclaw.json | grep -v '$${' 
+# ^ If non-empty, you have unescaped vars that Flux will substitute incorrectly
+```
+
 ## SOPS Secret Management
 
 Secrets are encrypted with SOPS using PGP key `FAC8E7C3A2BC7DEE58A01C5928E1AB8AF0CF07A5`.
@@ -105,12 +146,25 @@ After modifying secrets:
 2. Flux decrypts during reconciliation using its SOPS provider
 3. Restart the pod if the secret is consumed via `envFrom`
 
+## Security Notes
+
+- **Never** commit unencrypted secrets — always use SOPS
+- **Never** `docker push` to the registry — only `skopeo copy docker-archive:`
+- Verify `$${VAR}` escaping before pushing config changes
+- Review SOPS diffs carefully — `sops -d` both old and new to compare plaintext
+
 ## Quick Deploy Checklist
 
-1. Make changes to config/manifests/workspace
-2. `git add && git commit && git push`
-3. Wait for CI (if image changes): `gh run watch`
-4. `flux reconcile kustomization openclaw-workspace --with-source`
-5. `kubectl rollout restart deployment openclaw -n openclaw` (if images changed)
-6. `kubectl get pods -n openclaw` — verify Running
-7. `kubectl logs ... -c openclaw --tail=20` — verify startup
+1. ☐ Make changes to config/manifests/workspace
+2. ☐ Validate: `jq . openclaw.json`, `kustomize build kustomization/`
+3. ☐ Check escaping: `grep -n '${' openclaw.json | grep -v '$${' ` → should be empty
+4. ☐ `git add && git commit && git push`
+5. ☐ Wait for CI (if image changes): `gh run watch`
+6. ☐ `flux reconcile kustomization openclaw-workspace --with-source`
+7. ☐ `kubectl rollout restart deployment openclaw -n openclaw` (if images changed)
+8. ☐ `kubectl get pods -n openclaw` — verify Running
+9. ☐ `kubectl logs ... -c openclaw --tail=20` — verify startup
+
+## Artifact Handoff
+
+Write deployment verification results to `/tmp/outputs/deploy-verification.md` for complex deployments that need audit trails.

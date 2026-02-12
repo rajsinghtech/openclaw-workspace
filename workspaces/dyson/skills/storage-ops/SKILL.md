@@ -1,10 +1,43 @@
 ---
 name: Storage Operations
-description: Rook-Ceph diagnostics (Ottawa + Robbinsdale) and storage troubleshooting
+description: >
+  Rook-Ceph diagnostics (Ottawa + Robbinsdale) and storage troubleshooting
+  for all clusters including local-path on StPetersburg.
+
+  Use when: Ceph health is not OK, PVCs are stuck in Pending, OSD is down,
+  pools are near full, or volume attachment errors occur. Also use for
+  routine storage capacity monitoring.
+
+  Don't use when: The issue is a pod crash unrelated to storage (use
+  pod-troubleshooting). Don't use for Flux reconciliation errors (use
+  flux-ops). Don't use for image pull failures (use zot-registry). Don't
+  use for general cluster health (use cluster-health — it includes a
+  storage summary).
+
+  Outputs: Storage health diagnosis with specific Ceph status, OSD state,
+  pool capacity, and PVC status. Remediation steps for identified issues.
 requires: []
 ---
 
 # Storage Operations
+
+## Routing
+
+### Use This Skill When
+- Ceph status shows HEALTH_WARN or HEALTH_ERR
+- PVCs stuck in Pending or Lost state
+- OSD is down or has been marked out
+- Pool usage is approaching capacity (>80%)
+- Volume attachment errors (FailedAttachVolume, FailedMount, multi-attach)
+- Pods stuck because of storage issues
+- Routine storage capacity check
+
+### Don't Use This Skill When
+- Pod is crashing for non-storage reasons → use **pod-troubleshooting**
+- Flux can't reconcile → use **flux-ops**
+- Image pull issues → use **zot-registry**
+- You want a full health scan including storage → use **cluster-health** (it covers storage at a high level)
+- The issue is with the registry, not cluster storage → use **zot-registry**
 
 Storage diagnostics for all 3 clusters. Ottawa and Robbinsdale run Rook-Ceph; StPetersburg uses local-path-provisioner.
 
@@ -104,3 +137,13 @@ kubectl --context talos-stpetersburg get configmap -n local-path-storage local-p
 | PVC Pending | StorageClass mismatch or pool full | Check storageClass exists and pool has capacity |
 | FailedMount | Stale VolumeAttachment | Verify old pod is gone, then report |
 | local-path Pending | Node selector or path issue | Check provisioner logs |
+
+## Edge Cases
+
+- **HEALTH_WARN after node restart:** Usually transient (PG rebalancing). Wait 5 minutes before escalating.
+- **OSD marked out but node is fine:** OSD process crashed — check OSD pod logs, may need restart
+- **PVC bound but pod can't mount:** Different node than where the PV lives (RWO constraint) — check node affinity
+
+## Artifact Handoff
+
+For complex storage investigations, write findings to `/tmp/outputs/storage-diagnosis.md` including Ceph status, OSD state, and pool usage snapshots.

@@ -21,3 +21,10 @@ Curated knowledge from code review and debugging sessions. Update when you ident
 - Config changes require pod restart (init container copies on startup)
 - Workspace changes require workspace image rebuild (build-workspace.yaml CI)
 - Dockerfile.openclaw changes require openclaw image rebuild (build-openclaw.yaml CI)
+
+## Skill Design Patterns
+
+- Skill descriptions are routing logic — include "Use when" and "Don't use when" blocks
+- Negative examples prevent misfires between code-review, debug-troubleshooting, and architecture-design
+- Put review templates and RCA templates inside the skill (free when unused, available when needed)
+- For long debugging sessions, write findings to `/tmp/outputs/` before compaction

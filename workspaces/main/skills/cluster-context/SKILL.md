@@ -1,10 +1,40 @@
 ---
 name: Cluster Context
-description: OpenClaw pod architecture, volumes, networking, secrets, and provider configuration. Use when debugging container, mount, networking, or credential issues.
+description: >
+  OpenClaw pod architecture, volumes, networking, secrets, and provider
+  configuration reference.
+
+  Use when: Debugging container, mount, networking, or credential issues.
+  Also use when you need to understand pod structure, check which providers
+  are configured, verify volume mounts, or inspect secrets configuration.
+
+  Don't use when: Debugging pod crashes (use pod-troubleshooting). Don't use
+  for Flux issues (use flux-debugging). Don't use for deploying changes
+  (use gitops-deploy). This is a reference skill, not a diagnostic workflow.
+
+  Outputs: Architecture reference information. No artifacts — this skill
+  provides context for other skills to use.
 requires: [kubectl]
 ---
 
 # Cluster Context
+
+## Routing
+
+### Use This Skill When
+- You need to know the pod architecture (containers, init containers, volumes)
+- Checking which model providers are configured and their API key setup
+- Verifying volume mount paths or networking configuration
+- Understanding the init container workflow
+- Someone asks "how is the pod set up?" or "what containers are running?"
+
+### Don't Use This Skill When
+- Pod is crashing → use **pod-troubleshooting** (it has diagnostic steps)
+- Flux won't reconcile → use **flux-debugging**
+- Deploying changes → use **gitops-deploy**
+- Inspecting images in registry → use **zot-registry**
+- Checking health across all clusters → use **cluster-health** (dyson)
+- This is a reference, not a runbook — use it to understand, then switch to the right diagnostic skill
 
 ## Pod Architecture
 
