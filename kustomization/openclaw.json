@@ -75,9 +75,9 @@
       },
       "userTimezone": "America/New_York",
       "timeoutSeconds": 600,
-      "maxConcurrent": 1,
+      "maxConcurrent": 3,
       "subagents": {
-        "maxConcurrent": 8
+        "maxConcurrent": 16
       },
       "compaction": {
         "memoryFlush": {
@@ -183,7 +183,9 @@
           "primary": "nvidia/moonshotai/kimi-k2.5"
         },
         "subagents": {
-          "allowAgents": []
+          "allowAgents": [
+            "main"
+          ]
         }
       },
       {
@@ -198,7 +200,8 @@
         },
         "subagents": {
           "allowAgents": [
-            "main"
+            "main",
+            "ribak"
           ]
         }
       },
