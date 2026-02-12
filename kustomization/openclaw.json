@@ -234,6 +234,16 @@
     "scope": "per-sender",
     "idleMinutes": 60
   },
+  "browser": {
+    "enabled": true,
+    "defaultProfile": "openclaw",
+    "profiles": {
+      "openclaw": {
+        "cdpUrl": "http://openclaw-chromium:9222",
+        "color": "#4285F4"
+      }
+    }
+  },
   "logging": {
     "level": "info",
     "consoleStyle": "compact",
