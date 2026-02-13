@@ -54,8 +54,8 @@
         "api": "openai-completions",
         "models": [
           {
-            "id": "moonshotai/kimi-k2.5",
-            "name": "Kimi K2.5",
+            "id": "moonshotai/kimi-k2-instruct",
+            "name": "Kimi K2 Instruct",
             "input": [
               "text"
             ],
@@ -71,7 +71,7 @@
     "defaults": {
       "workspace": "/home/node/.openclaw/workspaces/main",
       "model": {
-        "primary": "llama-cpp/Qwen3-Coder-Next"
+        "primary": "nvidia/moonshotai/kimi-k2-instruct"
       },
       "userTimezone": "America/New_York",
       "timeoutSeconds": 600,
@@ -105,7 +105,7 @@
           "emoji": "🦞"
         },
         "model": {
-          "primary": "llama-cpp/Qwen3-Coder-Next"
+          "primary": "nvidia/moonshotai/kimi-k2-instruct"
         },
         "subagents": {
           "allowAgents": [
@@ -119,7 +119,7 @@
         },
         "heartbeat": {
           "every": "30m",
-          "model": "llama-cpp/Qwen3-Coder-Next",
+          "model": "nvidia/moonshotai/kimi-k2-instruct",
           "target": "discord",
           "activeHours": {
             "start": "08:00",
@@ -136,10 +136,10 @@
         },
         "workspace": "/home/node/.openclaw/workspaces/morty",
         "model": {
-          "primary": "llama-cpp/Qwen3-Coder-Next"
+          "primary": "nvidia/moonshotai/kimi-k2-instruct"
         },
         "subagents": {
-          "model": "llama-cpp/Qwen3-Coder-Next",
+          "model": "nvidia/moonshotai/kimi-k2-instruct",
           "allowAgents": [
             "main"
           ]
@@ -153,17 +153,17 @@
         },
         "workspace": "/home/node/.openclaw/workspaces/dyson",
         "model": {
-          "primary": "llama-cpp/Qwen3-Coder-Next"
+          "primary": "nvidia/moonshotai/kimi-k2-instruct"
         },
         "subagents": {
-          "model": "llama-cpp/Qwen3-Coder-Next",
+          "model": "nvidia/moonshotai/kimi-k2-instruct",
           "allowAgents": [
             "main"
           ]
         },
         "heartbeat": {
           "every": "15m",
-          "model": "llama-cpp/Qwen3-Coder-Next",
+          "model": "nvidia/moonshotai/kimi-k2-instruct",
           "target": "discord",
           "activeHours": {
             "start": "06:00",
@@ -180,7 +180,7 @@
         },
         "workspace": "/home/node/.openclaw/workspaces/robert",
         "model": {
-          "primary": "llama-cpp/Qwen3-Coder-Next"
+          "primary": "nvidia/moonshotai/kimi-k2-instruct"
         },
         "subagents": {
           "allowAgents": [
@@ -213,7 +213,7 @@
         },
         "workspace": "/home/node/.openclaw/workspaces/ribak",
         "model": {
-          "primary": "llama-cpp/Qwen3-Coder-Next"
+          "primary": "nvidia/moonshotai/kimi-k2-instruct"
         },
         "subagents": {
           "allowAgents": [
