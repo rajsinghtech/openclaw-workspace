@@ -13,6 +13,19 @@ Curated knowledge from past audit sessions. Update when you discover new pattern
 - Flux postBuild substitutes all `${VAR}` — repo files must use `$${VAR}` for OpenClaw's own env resolution
 - Double-check all `apiKey` fields in openclaw.json for correct escaping after edits
 
+## SOPS Credential Patterns
+
+- **PGP key:** `FAC8E7C3A2BC7DEE58A01C5928E1AB8AF0CF07A5` — stored in `sops-gpg` Secret per cluster
+- **Cross-cluster secrets:** `clusters/common/flux/vars/common-secrets.sops.yaml` (DEFAULT_PASSWORD, CLOUDFLARE_*, TS_*, GARAGE_*, etc.)
+- **Per-cluster secrets:** `clusters/talos-*/flux/vars/cluster-secrets.sops.yaml` (QB_WIREGUARD_*, SMB_*, app-specific API keys)
+- **Substitution chain:** SOPS file → Flux decrypts → K8s Secret in flux-system → postBuild replaces `${VAR}` in child manifests
+- **Three delivery patterns:**
+  1. Inline substitution in HelmRelease values (e.g., unpoller `pass = "Keiretsu${DEFAULT_PASSWORD}0"`)
+  2. Substituted Secret template → `secretKeyRef` (e.g., cloudflare secret.yaml with `${KILLINIT_CC_CLOUDFLARE_API_TOKEN}`)
+  3. Direct `secretKeyRef` from operator-managed secrets (e.g., CNPG creates `coder-db-url`)
+- **Opt-out label:** `substitution.flux.home.arpa/disabled: "true"` skips postBuild substitution
+- See `skills/sops-credentials/SKILL.md` for full reference
+
 ## Container Facts
 
 - Container name: `openclaw` (not `main`)

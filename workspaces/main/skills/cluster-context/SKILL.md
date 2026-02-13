@@ -81,6 +81,16 @@ Pod: openclaw
 | `ts-oauth` | Tailscale OAuth credentials (ephemeral + preauthorized) |
 | `zot-pull-secret` | Registry credentials for `oci.killinit.cc` |
 
+### SOPS Credential Pipeline (kubernetes-manifests repo)
+
+Secrets for all cluster apps flow through SOPS + Flux postBuild substitution:
+- **Cross-cluster:** `clusters/common/flux/vars/common-secrets.sops.yaml` → `common-secrets` Secret
+- **Per-cluster:** `clusters/talos-*/flux/vars/cluster-secrets.sops.yaml` → `cluster-secrets` Secret
+- **PGP key:** `FAC8E7C3A2BC7DEE58A01C5928E1AB8AF0CF07A5` (stored in `sops-gpg` Secret)
+- **Delivery:** `${VAR}` in manifests is replaced by Flux before apply
+
+For the full credential flow (patterns, examples, debugging), see **Morty's sops-credentials skill**.
+
 ## Inspection Commands
 
 ```bash
