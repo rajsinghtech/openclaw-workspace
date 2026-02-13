@@ -54,8 +54,8 @@
         "api": "openai-completions",
         "models": [
           {
-            "id": "moonshotai/kimi-k2-instruct",
-            "name": "Kimi K2 Instruct",
+            "id": "z-ai/glm4.7",
+            "name": "GLM 4.7",
             "input": [
               "text"
             ],
@@ -71,7 +71,7 @@
     "defaults": {
       "workspace": "/home/node/.openclaw/workspaces/main",
       "model": {
-        "primary": "nvidia/moonshotai/kimi-k2-instruct"
+        "primary": "nvidia/z-ai/glm4.7"
       },
       "userTimezone": "America/New_York",
       "timeoutSeconds": 600,
@@ -105,7 +105,7 @@
           "emoji": "🦞"
         },
         "model": {
-          "primary": "nvidia/moonshotai/kimi-k2-instruct"
+          "primary": "nvidia/z-ai/glm4.7"
         },
         "subagents": {
           "allowAgents": [
@@ -119,7 +119,7 @@
         },
         "heartbeat": {
           "every": "30m",
-          "model": "nvidia/moonshotai/kimi-k2-instruct",
+          "model": "nvidia/z-ai/glm4.7",
           "target": "discord",
           "activeHours": {
             "start": "08:00",
@@ -136,10 +136,10 @@
         },
         "workspace": "/home/node/.openclaw/workspaces/morty",
         "model": {
-          "primary": "nvidia/moonshotai/kimi-k2-instruct"
+          "primary": "nvidia/z-ai/glm4.7"
         },
         "subagents": {
-          "model": "nvidia/moonshotai/kimi-k2-instruct",
+          "model": "nvidia/z-ai/glm4.7",
           "allowAgents": [
             "main"
           ]
@@ -153,17 +153,17 @@
         },
         "workspace": "/home/node/.openclaw/workspaces/dyson",
         "model": {
-          "primary": "nvidia/moonshotai/kimi-k2-instruct"
+          "primary": "nvidia/z-ai/glm4.7"
         },
         "subagents": {
-          "model": "nvidia/moonshotai/kimi-k2-instruct",
+          "model": "nvidia/z-ai/glm4.7",
           "allowAgents": [
             "main"
           ]
         },
         "heartbeat": {
           "every": "15m",
-          "model": "nvidia/moonshotai/kimi-k2-instruct",
+          "model": "nvidia/z-ai/glm4.7",
           "target": "discord",
           "activeHours": {
             "start": "06:00",
@@ -180,7 +180,7 @@
         },
         "workspace": "/home/node/.openclaw/workspaces/robert",
         "model": {
-          "primary": "nvidia/moonshotai/kimi-k2-instruct"
+          "primary": "nvidia/z-ai/glm4.7"
         },
         "subagents": {
           "allowAgents": [
@@ -213,7 +213,7 @@
         },
         "workspace": "/home/node/.openclaw/workspaces/ribak",
         "model": {
-          "primary": "nvidia/moonshotai/kimi-k2-instruct"
+          "primary": "nvidia/z-ai/glm4.7"
         },
         "subagents": {
           "allowAgents": [
