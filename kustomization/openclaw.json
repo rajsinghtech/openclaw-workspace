@@ -119,7 +119,7 @@
         "default": true,
         "identity": {
           "name": "OpenClaw",
-          "emoji": "🦞"
+          "emoji": "\ud83e\udd9e"
         },
         "model": {
           "primary": "aperture/MiniMax-M2.5"
@@ -149,7 +149,7 @@
         "id": "morty",
         "identity": {
           "name": "Morty",
-          "emoji": "🔧"
+          "emoji": "\ud83d\udd27"
         },
         "workspace": "/home/node/.openclaw/workspaces/morty",
         "model": {
@@ -166,7 +166,7 @@
         "id": "dyson",
         "identity": {
           "name": "Dyson",
-          "emoji": "🌀"
+          "emoji": "\ud83c\udf00"
         },
         "workspace": "/home/node/.openclaw/workspaces/dyson",
         "model": {
@@ -193,7 +193,7 @@
         "id": "robert",
         "identity": {
           "name": "Robert",
-          "emoji": "📋"
+          "emoji": "\ud83d\udccb"
         },
         "workspace": "/home/node/.openclaw/workspaces/robert",
         "model": {
@@ -209,7 +209,7 @@
         "id": "leon",
         "identity": {
           "name": "Leon",
-          "emoji": "💻"
+          "emoji": "\ud83d\udcbb"
         },
         "workspace": "/home/node/.openclaw/workspaces/leon",
         "model": {
@@ -226,7 +226,7 @@
         "id": "ribak",
         "identity": {
           "name": "Ribak",
-          "emoji": "📋"
+          "emoji": "\ud83d\udccb"
         },
         "workspace": "/home/node/.openclaw/workspaces/ribak",
         "model": {
@@ -307,5 +307,11 @@
       },
       "configWrites": true
     }
+  },
+  "commands": {
+    "useAccessGroups": false,
+    "ownerAllowFrom": [
+      "*"
+    ]
   }
 }
