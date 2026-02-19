@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal-web
+  namespace: temporal
+  labels:
+    app: temporal-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temporal-web
+  template:
+    metadata:
+      labels:
+        app: temporal-web
+    spec:
+      containers:
+        - name: temporal-web
+          image: temporalio/web:2.42.1
+          ports:
+            - containerPort: 8088
+              name: http
+          env:
+            - name: TEMPORAL_ADDRESS
+              value: "temporal:7233"
+            - name: TEMPORAL_CORS_ORIGINS
+              value: "*"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 512Mi

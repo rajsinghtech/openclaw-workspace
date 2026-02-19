@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: temporal
+  labels:
+    app: postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+      name: postgres
+  selector:
+    app: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: temporal
+  namespace: temporal
+  labels:
+    app: temporal
+spec:
+  ports:
+    - port: 7233
+      targetPort: 7233
+      name: grpc
+    - port: 7933
+      targetPort: 7933
+      name: membership
+  clusterIP: None
+  selector:
+    app: temporal
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: temporal-web
+  namespace: temporal
+  labels:
+    app: temporal-web
+spec:
+  ports:
+    - port: 8088
+      targetPort: 8088
+      name: http
+  selector:
+    app: temporal-web

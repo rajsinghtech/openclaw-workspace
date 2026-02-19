@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: temporal
+
+resources:
+  - namespace.yaml
+  - temporal-rbac.yaml
+  - temporal-configmap.yaml
+  - postgres-statefulset.yaml
+  - postgres-service.yaml
+  - temporal-deployments.yaml
+  - temporal-web-deployment.yaml
+  - temporal-ingress.yaml
+
+secretGenerator:
+  - name: temporal-secrets
+    literals:
+      - DB_PASSWORD=temporal
+    type: Opaque

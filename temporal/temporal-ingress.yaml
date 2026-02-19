@@ -1,0 +1,23 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: temporal-web
+  namespace: temporal
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  parentRefs:
+    - name: ts
+      group: gateway.networking.k8s.io
+      kind: Gateway
+      namespace: flux-system
+  hostnames:
+    - temporal.ottawa.internal
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: temporal-web
+          port: 8088

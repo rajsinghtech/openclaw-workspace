@@ -1,0 +1,170 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal-frontend
+  namespace: temporal
+  labels:
+    app: temporal-frontend
+    app.kubernetes.io/name: temporal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temporal-frontend
+  template:
+    metadata:
+      labels:
+        app: temporal-frontend
+    spec:
+      containers:
+        - name: temporal
+          image: temporalio/server:1.29.2
+          ports:
+            - containerPort: 7233
+              name: grpc
+            - containerPort: 7933
+              name: membership
+          env:
+            - name: TEMPORAL_ADDRESS
+              value: "temporal:7233"
+            - name: TEMPORAL SERVICES
+              value: frontend
+            - name: DB_TYPE
+              value: postgres
+            - name: DB_PORT
+              value: "5432"
+            - name: POSTGRES_SEEDS
+              value: postgres
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal-history
+  namespace: temporal
+  labels:
+    app: temporal-history
+    app.kubernetes.io/name: temporal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temporal-history
+  template:
+    metadata:
+      labels:
+        app: temporal-history
+    spec:
+      containers:
+        - name: temporal
+          image: temporalio/server:1.29.2
+          ports:
+            - containerPort: 7234
+              name: grpc
+          env:
+            - name: TEMPORAL_ADDRESS
+              value: "temporal:7233"
+            - name: TEMPORAL SERVICES
+              value: history
+            - name: DB_TYPE
+              value: postgres
+            - name: DB_PORT
+              value: "5432"
+            - name: POSTGRES_SEEDS
+              value: postgres
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal-matching
+  namespace: temporal
+  labels:
+    app: temporal-matching
+    app.kubernetes.io/name: temporal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temporal-matching
+  template:
+    metadata:
+      labels:
+        app: temporal-matching
+    spec:
+      containers:
+        - name: temporal
+          image: temporalio/server:1.29.2
+          ports:
+            - containerPort: 7235
+              name: grpc
+          env:
+            - name: TEMPORAL_ADDRESS
+              value: "temporal:7233"
+            - name: TEMPORAL SERVICES
+              value: matching
+            - name: DB_TYPE
+              value: postgres
+            - name: DB_PORT
+              value: "5432"
+            - name: POSTGRES_SEEDS
+              value: postgres
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal-worker
+  namespace: temporal
+  labels:
+    app: temporal-worker
+    app.kubernetes.io/name: temporal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temporal-worker
+  template:
+    metadata:
+      labels:
+        app: temporal-worker
+    spec:
+      containers:
+        - name: temporal
+          image: temporalio/server:1.29.2
+          env:
+            - name: TEMPORAL_ADDRESS
+              value: "temporal:7233"
+            - name: TEMPORAL SERVICES
+              value: worker
+            - name: DB_TYPE
+              value: postgres
+            - name: DB_PORT
+              value: "5432"
+            - name: POSTGRES_SEEDS
+              value: postgres
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
