@@ -5,10 +5,10 @@ ARG KUBECTL_V=v1.35.1
 ARG FLUX_V=v2.7.5
 ARG HELM_V=v4.1.1
 ARG KUSTOMIZE_V=v5.8.1
-ARG YQ_V=v4.52.2
+ARG YQ_V=v4.52.4
 ARG SOPS_V=v3.11.0
 ARG JQ_V=jq-1.8.1
-ARG GH_V=2.86.0
+ARG GH_V=2.87.0
 ARG GOGCLI_V=0.9.0
 
 # Stage 1: download tools (each RUN = cached layer)
