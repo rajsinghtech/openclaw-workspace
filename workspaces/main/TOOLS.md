@@ -217,3 +217,22 @@ kubectl get events -n openclaw --sort-by='.lastTimestamp' | tail -20
 flux get kustomization -A | grep openclaw
 kubectl logs -l app.kubernetes.io/name=openclaw -n openclaw -c openclaw --tail=20
 ```
+
+## Multi-Cluster Access
+
+The agent manages the ottawa cluster by default. Use `--context` to switch clusters:
+
+```bash
+# Ottawa (default)
+kubectl get pods -n openclaw
+
+# Robbinsdale
+kubectl --context robbinsdale get pods -n openclaw
+
+# St. Petersburg
+kubectl --context stpetersburg get pods -n openclaw
+
+# Check which contexts are available
+kubectl config get-contexts
+kubectl config current-context
+```
