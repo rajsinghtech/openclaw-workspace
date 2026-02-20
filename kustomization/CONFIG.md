@@ -19,8 +19,8 @@ Escape literal `${VAR}` as `$${VAR}` in the repository. At runtime, OpenClaw see
 {
   "models": {
     "providers": {
-      "anthropic": {
-        "apiKey": "$${ANTHROPIC_API_KEY}"
+      "nvidia": {
+        "apiKey": "$${NVIDIA_API_KEY}"
       }
     }
   }
@@ -30,8 +30,8 @@ Escape literal `${VAR}` as `$${VAR}` in the repository. At runtime, OpenClaw see
 {
   "models": {
     "providers": {
-      "anthropic": {
-        "apiKey": "${ANTHROPIC_API_KEY}"
+      "nvidia": {
+        "apiKey": "${NVIDIA_API_KEY}"
       }
     }
   }
@@ -122,7 +122,7 @@ Agents can run periodic heartbeats for autonomous tasks.
         "id": "dyson",
         "heartbeat": {
           "every": "15m",
-          "model": "nvidia/moonshotai/kimi-k2.5",
+          "model": "aperture/MiniMax-M2.5",
           "target": "discord",
           "activeHours": {
             "start": "06:00",
@@ -155,7 +155,7 @@ Agents can spawn sub-agents with controlled permissions.
 {
   "subagents": {
     "allowAgents": ["morty", "dyson"],
-    "model": "nvidia/moonshotai/kimi-k2.5",
+    "model": "aperture/MiniMax-M2.5",
     "maxConcurrent": 16
   }
 }
