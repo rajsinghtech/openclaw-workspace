@@ -9,5 +9,5 @@ spec:
   ports:
     - name: http
       port: 18789
-      targetPort: http
+      targetPort: 18790
       protocol: TCP
