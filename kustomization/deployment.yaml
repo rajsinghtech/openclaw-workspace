@@ -37,7 +37,7 @@ spec:
           securityContext:
             privileged: true
         - name: init-workspace
-          image: busybox:latest
+          image: busybox:1.37.0
           command: [sh, -c]
           args:
             - |
@@ -46,6 +46,7 @@ spec:
               rm -rf /home/node/.openclaw/workspaces
               cp -a /opt/workspace/workspaces /home/node/.openclaw/workspaces
               echo "[init-workspace] Updating config..."
+              rm -f /home/node/.openclaw/clawdbot.json
               cp /opt/config/openclaw.json /home/node/.openclaw/clawdbot.json
               echo "[init-workspace] Updating cron jobs..."
               mkdir -p /home/node/.openclaw/cron
@@ -100,6 +101,18 @@ spec:
             - name: http
               containerPort: 18789
               protocol: TCP
+          startupProbe:
+            tcpSocket:
+              port: 18789
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 12
+          readinessProbe:
+            tcpSocket:
+              port: 18789
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests:
               cpu: 250m
