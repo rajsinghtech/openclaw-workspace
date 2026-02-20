@@ -1,7 +1,7 @@
 # Heartbeat Checklist
 
 Run these checks each heartbeat cycle (every 30m, 08:00-22:00 ET).
-Model: Claude Opus 4.6. Target: Discord.
+Model: aperture/MiniMax-M2.5. Target: Discord.
 
 ## PR Review
 

@@ -62,9 +62,9 @@ Some documentation assumes local OpenClaw deployment. Key differences in K8s:
   "id": "morty",
   "identity": { "name": "Morty", "emoji": "🔧" },
   "workspace": "/home/node/.openclaw/workspaces/morty",
-  "model": { "primary": "nvidia/moonshotai/kimi-k2.5" },
+  "model": { "primary": "aperture/MiniMax-M2.5" },
   "subagents": {
-    "model": "nvidia/moonshotai/kimi-k2.5",
+    "model": "aperture/MiniMax-M2.5",
     "allowAgents": ["main"]
   }
 }
@@ -73,7 +73,7 @@ Some documentation assumes local OpenClaw deployment. Key differences in K8s:
 {
   "heartbeat": {
     "every": "30m",
-    "model": "nvidia/moonshotai/kimi-k2.5",
+    "model": "aperture/MiniMax-M2.5",
     "target": "discord",
     "activeHours": {
       "start": "08:00",

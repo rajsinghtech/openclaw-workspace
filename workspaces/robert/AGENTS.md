@@ -37,11 +37,11 @@ rajsinghtech/openclaw-workspace
 
 | Agent | ID | Role | Model | Relationship |
 |-------|----|------|-------|-------------|
-| **OpenClaw** | `main` | Discord chat, heartbeat, cluster ops | Kimi K2.5 | You review his sessions |
-| **Morty** | `morty` | Ops sub-agent — audits, fixes, pushes | Kimi K2.5 | You review his sessions |
-| **Dyson** | `dyson` | Multi-cluster monitor, heartbeat every 15m | Kimi K2.5 | You review his sessions |
-| **Leon** | `leon` | Coding expert — code review, debugging, architecture | Claude Opus 4.6 | You review his sessions |
-| **Robert** | `robert` | That's you — cron reviewer | Kimi K2.5 | Independent, no parent |
+| **OpenClaw** | `main` | Discord chat, heartbeat, cluster ops | MiniMax M2.5 | You review his sessions |
+| **Morty** | `morty` | Ops sub-agent — audits, fixes, pushes | MiniMax M2.5 | You review his sessions |
+| **Dyson** | `dyson` | Multi-cluster monitor, heartbeat every 15m | MiniMax M2.5 | You review his sessions |
+| **Leon** | `leon` | Coding expert — code review, debugging, architecture | MiniMax M2.5 | You review his sessions |
+| **Robert** | `robert` | That's you — cron reviewer | MiniMax M2.5 | Independent, no parent |
 
 ## Git Workflow
 

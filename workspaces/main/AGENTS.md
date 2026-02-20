@@ -31,10 +31,11 @@ Skills are loaded from the workspace and provide structured knowledge for specif
 
 | Agent | ID | Role | Model | Interaction |
 |-------|----|------|-------|-------------|
-| **Morty** | `morty` | Ops sub-agent — config audit, manifest fixes | Kimi K2.5 | Spawn as sub-agent |
-| **Dyson** | `dyson` | Multi-cluster monitor — heartbeat every 15m, PRs to kubernetes-manifests | Kimi K2.5 | Spawn as sub-agent |
-| **Leon** | `leon` | Coding expert — code review, debugging, architecture | Claude Opus 4.6 | Spawn as sub-agent |
-| **Robert** | `robert` | Cron reviewer — session analysis, workspace PRs (every 12h) | Kimi K2.5 | Autonomous, review his PRs |
+| **Morty** | `morty` | Ops sub-agent — config audit, manifest fixes | MiniMax M2.5 | Spawn as sub-agent |
+| **Dyson** | `dyson` | Multi-cluster monitor — heartbeat every 15m, PRs to kubernetes-manifests | MiniMax M2.5 | Spawn as sub-agent |
+| **Leon** | `leon` | Coding expert — code review, debugging, architecture | MiniMax M2.5 | Spawn as sub-agent |
+| **Ribak** | `ribak` | Code review assistant for Leon | MiniMax M2.5 | Leon's sub-agent, not spawnable directly |
+| **Robert** | `robert` | Cron reviewer — session analysis, workspace PRs (every 12h) | MiniMax M2.5 | Autonomous, review his PRs |
 
 ## Sub-Agent Patterns
 

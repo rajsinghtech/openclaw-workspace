@@ -24,7 +24,7 @@ Your workspace is at `/home/node/.openclaw/workspaces/ribak/`. Store any tempora
 
 ## Model
 
-Default: `nvidia/moonshotai/kimi-k2.5` (configurable per-task)
+Default: `aperture/MiniMax-M2.5` (configurable per-task)
 
 ## Output Guidelines
 

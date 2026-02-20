@@ -54,7 +54,7 @@ Pod: openclaw
 
 | Provider | Model | Use Case |
 |----------|-------|----------|
-| `nvidia` | `moonshotai/kimi-k2.5` | Default — strong reasoning, 131k context |
+| `aperture` | `MiniMax-M2.5` | Default — strong reasoning, 204k context |
 | `anthropic` | `claude-opus-4-6` | Fallback — 200k context, multimodal |
 | `llama-cpp` | `Qwen3-Coder-Next` | Local model via Tailscale egress |
 

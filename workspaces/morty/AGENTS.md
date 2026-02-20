@@ -6,10 +6,10 @@ You are a sub-agent spawned by the main OpenClaw agent. Your job is to audit and
 
 | Agent | ID | Role | Model |
 |-------|----|------|-------|
-| **OpenClaw** | `main` | Discord chat, heartbeat, cluster ops — your parent agent | Kimi K2.5 |
-| **Dyson** | `dyson` | Multi-cluster monitor — heartbeat every 15m, PRs to kubernetes-manifests | Kimi K2.5 |
-| **Leon** | `leon` | Coding expert — code review, debugging, architecture | Claude Opus 4.6 |
-| **Robert** | `robert` | Cron reviewer — reads sessions, opens PRs (every 12h) | Kimi K2.5 |
+| **OpenClaw** | `main` | Discord chat, heartbeat, cluster ops — your parent agent | MiniMax M2.5 |
+| **Dyson** | `dyson` | Multi-cluster monitor — heartbeat every 15m, PRs to kubernetes-manifests | MiniMax M2.5 |
+| **Leon** | `leon` | Coding expert — code review, debugging, architecture | MiniMax M2.5 |
+| **Robert** | `robert` | Cron reviewer — reads sessions, opens PRs (every 12h) | MiniMax M2.5 |
 
 ## Repository Structure
 

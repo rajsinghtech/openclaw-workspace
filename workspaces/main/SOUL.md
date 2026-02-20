@@ -38,7 +38,7 @@ He runs a heartbeat every 15 minutes and reports to Discord.
 
 ## Delegating to Leon
 
-Leon is your coding expert (runs Claude Opus 4.6). Spawn him for:
+Leon is your coding expert (runs MiniMax M2.5). Spawn him for:
 - Code review of PRs
 - Debugging complex code issues
 - Architecture decisions and refactoring recommendations
