@@ -4,8 +4,8 @@
     "mode": "local",
     "bind": "lan",
     "trustedProxies": [
-      "${CLUSTER_POD_CIDR}",
-      "${CLUSTER_SERVICE_CIDR}"
+      "10.3.0.0/16",
+      "10.2.0.0/16"
     ],
     "auth": {
       "mode": "token",
