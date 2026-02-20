@@ -54,7 +54,7 @@ spec:
               echo "[init-workspace] Setting up git config..."
               cat > /home/node/.openclaw/.gitconfig <<'GITCFG'
               [credential "https://github.com"]
-                helper = !f() { echo "username=x-access-token"; echo "password=$GITHUB_TOKEN"; }; f
+                helper = !gh auth git-credential
               [user]
                 name = rajsinghtechbot
                 email = king360raj@gmail.com
