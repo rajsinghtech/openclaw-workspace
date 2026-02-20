@@ -158,19 +158,23 @@ spec:
             limits:
               memory: 512Mi
         # WORKAROUND: openclaw/openclaw#19004 — v2026.2.19 blocks ws:// on non-loopback
-        # but session tools use LAN IP when bind=lan. Socat bridges external traffic
-        # to the loopback-bound gateway. Remove this sidecar and restore bind=lan +
+        # but session tools use LAN IP when bind=lan. Nginx reverse proxy bridges
+        # external traffic to the loopback-bound gateway with proper WebSocket
+        # upgrade and proxy headers. Remove this sidecar and restore bind=lan +
         # containerPort 18789 on the openclaw container once #19004 is fixed upstream.
-        # Also revert service-main.yaml targetPort from 18790 back to 18789.
+        # Also revert service-main.yaml targetPort from 18790 back to 18789,
+        # and remove the gateway-proxy-config ConfigMap.
         - name: gateway-proxy
-          image: alpine/socat:1.8.0.1
-          args:
-            - TCP-LISTEN:18790,fork,reuseaddr
-            - TCP:127.0.0.1:18789
+          image: nginx:1.27-alpine
           ports:
             - name: http
               containerPort: 18790
               protocol: TCP
+          volumeMounts:
+            - name: gateway-proxy-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
           resources:
             requests:
               cpu: 10m
@@ -192,3 +196,6 @@ spec:
         - name: kubeconfig
           secret:
             secretName: openclaw-kubeconfig
+        - name: gateway-proxy-config
+          configMap:
+            name: gateway-proxy-config
