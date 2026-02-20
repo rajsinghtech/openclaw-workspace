@@ -83,14 +83,14 @@ Some documentation assumes local OpenClaw deployment. Key differences in K8s:
   }
 }
 
-// Model provider (escaped for Flux)
+// Model provider example
 {
   "models": {
     "mode": "merge",
     "providers": {
-      "anthropic": {
-        "baseUrl": "https://api.anthropic.com",
-        "apiKey": "$${ANTHROPIC_API_KEY}",  // Escaped!
+      "aperture": {
+        "baseUrl": "http://aperture",
+        "apiKey": "unused",
         "api": "anthropic-messages"
       }
     }
@@ -102,7 +102,7 @@ Some documentation assumes local OpenClaw deployment. Key differences in K8s:
 
 | Mistake | Correction |
 |---------|------------|
-| `{apiKey: "${ANTHROPIC_API_KEY}"}` | Use `$${...}` for Flux |
+| Wrong `api` type for provider | aperture uses `anthropic-messages` |
 | Missing `subagents.allowAgents` | Add explicit allowlist |
 | Wrong workspace path | Must be `/home/node/.openclaw/workspaces/<id>` |
 | Omitted `model.primary` | Required for each agent |

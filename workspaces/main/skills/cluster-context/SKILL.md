@@ -55,8 +55,6 @@ Pod: openclaw
 | Provider | Model | Use Case |
 |----------|-------|----------|
 | `aperture` | `MiniMax-M2.5` | Default — strong reasoning, 204k context |
-| `anthropic` | `claude-opus-4-6` | Fallback — 200k context, multimodal |
-| `llama-cpp` | `Qwen3-Coder-Next` | Local model via Tailscale egress |
 
 ## Volumes
 
@@ -71,13 +69,13 @@ Pod: openclaw
 - Service `openclaw-main` on port 18789
 - HTTPRoute through Gateway API (`ts` gateway in `home` namespace)
 - Hostname: `openclaw.${CLUSTER_DOMAIN}` (Flux-substituted)
-- LLM backend: `stpetersburg-llama-cpp` ExternalName service → Tailscale egress proxy
+
 
 ## Secrets
 
 | Secret | Keys |
 |--------|------|
-| `openclaw-secrets` (SOPS) | DISCORD_BOT_TOKEN, OPENCLAW_GATEWAY_TOKEN, OPENAI_API_KEY, OPENAI_BASE_URL, ANTHROPIC_API_KEY, NVIDIA_API_KEY |
+| `openclaw-secrets` (SOPS) | DISCORD_BOT_TOKEN, OPENCLAW_GATEWAY_TOKEN |
 | `ts-oauth` | Tailscale OAuth credentials (ephemeral + preauthorized) |
 | `zot-pull-secret` | Registry credentials for `oci.killinit.cc` |
 

@@ -113,9 +113,9 @@ Key rules:
 Flux performs `${VAR}` substitution on all manifests. If your config contains literal `${VAR}` references (for OpenClaw's own env var substitution), you must escape them:
 
 ```
-Config value:      ${NVIDIA_API_KEY}
-In the file:       $${NVIDIA_API_KEY}
-After Flux sub:    ${NVIDIA_API_KEY}   ← OpenClaw resolves this at runtime
+Config value:      ${MY_SECRET}
+In the file:       $${MY_SECRET}
+After Flux sub:    ${MY_SECRET}   ← OpenClaw resolves this at runtime
 ```
 
 Double-dollar `$${}` tells Flux to emit a literal `${}` without substituting.

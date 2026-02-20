@@ -13,8 +13,8 @@ Curated knowledge from past sessions. Update this file when you learn something 
 
 ## API Key Resolution
 
-- Known providers (anthropic, openai): auto-resolve from env vars by name
-- Custom providers (nvidia): need explicit `${VAR}` in config apiKey field
+- Known providers (openai): auto-resolve from env vars by name
+- Custom providers (aperture): need explicit `${VAR}` in config apiKey field
 - Auth profiles override everything: `~/.openclaw/agents/<id>/agent/auth-profiles.json`
 
 ## Cron System
