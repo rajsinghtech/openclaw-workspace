@@ -25,7 +25,7 @@ For each cluster context (`talos-ottawa`, `talos-robbinsdale`, `talos-stpetersbu
 - Report any failed reconciliations with the error message
 
 ### 5. Recent Events
-- `kubectl --context <ctx> get events -A --sort-by='.lastTimestamp' --field-selector type=Warning` (last 15 minutes)
+- `kubectl --context <ctx> get events -A --sort-by='.lastTimestamp' --field-selector type=Warning` (last 30 minutes)
 - Report OOMKilled, FailedMount, FailedScheduling, BackOff, Unhealthy events
 
 ### 6. Storage

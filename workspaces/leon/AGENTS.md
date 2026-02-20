@@ -43,6 +43,7 @@ workspaces/leon/
     ├── code-review/
     ├── debug-troubleshooting/
     ├── architecture-design/
+    ├── openspec/
     └── testing-strategies/
 ```
 

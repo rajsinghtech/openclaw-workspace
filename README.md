@@ -37,7 +37,6 @@ workspaces/morty/        # Morty ops sub-agent workspace
 workspaces/leon/         # Leon coding expert workspace
 workspaces/dyson/        # Dyson multi-cluster monitor workspace
 workspaces/robert/       # Robert cron reviewer workspace
-workspaces/ribak/        # Ribak code review assistant (sub-agent for Leon)
 Dockerfile.openclaw      # Agent image (runtime + CLI tools)
 Dockerfile.workspace     # Content-only image (all workspaces)
 ```
@@ -66,12 +65,11 @@ Flux watches `./kustomization/` and auto-applies:
 
 | Agent | ID | Role | Model | Workspace |
 |-------|----|----|------|-----------|
-| Main | `main` | Discord chat, heartbeat, cluster ops | Kimi K2.5 | `workspaces/main/` |
-| Morty | `morty` | Ops agent — config audit, manifest fixes | Kimi K2.5 | `workspaces/morty/` |
-| Dyson | `dyson` | Multi-cluster monitor — heartbeat every 15m | Kimi K2.5 | `workspaces/dyson/` |
-| Robert | `robert` | Cron reviewer — sessions analysis, PRs | Kimi K2.5 | `workspaces/robert/` |
-| Leon | `leon` | Coding expert — code review, debugging, architecture | Claude Opus 4.6 | `workspaces/leon/` |
-| Ribak | `ribak` | Code review assistant (sub-agent for Leon) | Kimi K2.5 | `workspaces/ribak/` |
+| Main | `main` | Discord chat, heartbeat, cluster ops | MiniMax M2.5 | `workspaces/main/` |
+| Morty | `morty` | Ops agent — config audit, manifest fixes | MiniMax M2.5 | `workspaces/morty/` |
+| Dyson | `dyson` | Multi-cluster monitor — heartbeat every 30m | MiniMax M2.5 | `workspaces/dyson/` |
+| Robert | `robert` | Cron reviewer — daily session analysis, PRs | MiniMax M2.5 | `workspaces/robert/` |
+| Leon | `leon` | Coding expert — code review, debugging, architecture, OpenSpec | MiniMax M2.5 | `workspaces/leon/` |
 
 ## Skills
 

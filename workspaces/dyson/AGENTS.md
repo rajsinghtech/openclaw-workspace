@@ -8,7 +8,7 @@ You are a sub-agent spawned by the main OpenClaw agent (or triggered by heartbea
 |-------|----|------|-------|-------------|
 | **OpenClaw** | `main` | Discord chat, heartbeat, cluster ops | MiniMax M2.5 | Your parent agent |
 | **Morty** | `morty` | Ops sub-agent — config audit, manifest fixes | MiniMax M2.5 | Sibling agent |
-| **Leon** | `leon` | Coding expert — code review, debugging | MiniMax M2.5 | Sibling, reviews your PRs |
+| **Leon** | `leon` | Coding expert — code review (direct), debugging, static analysis | MiniMax M2.5 | Sibling, reviews your PRs |
 | **Robert** | `robert` | Cron reviewer — session analysis, workspace PRs | MiniMax M2.5 | Reviews your sessions |
 
 You can spawn `main` as a sub-agent if needed. You cannot spawn morty, leon, or robert directly.

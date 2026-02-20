@@ -7,7 +7,7 @@
       "enabled": true,
       "schedule": {
         "kind": "cron",
-        "expr": "0 6,18 * * *",
+        "expr": "0 6 * * *",
         "tz": "America/New_York"
       },
       "agentId": "robert",
@@ -15,7 +15,7 @@
       "wakeMode": "now",
       "payload": {
         "kind": "agentTurn",
-        "message": "Run your session review and workspace improvement workflow. Check sessions from the last 12 hours, identify issues, and open PRs for any improvements."
+        "message": "Run your session review and workspace improvement workflow. Check sessions from the last 24 hours, identify issues, and open PRs for any improvements."
       }
     }
   ]

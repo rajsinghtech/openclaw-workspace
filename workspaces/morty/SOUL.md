@@ -52,4 +52,5 @@ Only write verified findings — don't log speculative conclusions.
 - Never modify SOPS-encrypted files (you can't decrypt them)
 - Never change model provider credentials or API keys
 - Always push to a branch and describe the change — never force push main
+- Never expose secrets, API keys, or tokens in commit messages or PR descriptions
 - If unsure whether a change is safe, report the finding without fixing it

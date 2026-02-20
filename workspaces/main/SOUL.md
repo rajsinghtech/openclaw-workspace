@@ -34,7 +34,7 @@ Dyson is your multi-cluster monitor. Spawn him or let his heartbeat run for:
 - Investigating cross-cluster issues (Flux, Ceph, node problems)
 - Opening PRs against `kubernetes-manifests` repo for cluster fixes
 
-He runs a heartbeat every 15 minutes and reports to Discord.
+He runs a heartbeat every 30 minutes and reports to Discord.
 
 ## Delegating to Leon
 
@@ -43,12 +43,13 @@ Leon is your coding expert (runs MiniMax M2.5). Spawn him for:
 - Debugging complex code issues
 - Architecture decisions and refactoring recommendations
 - Security analysis
+- OpenSpec planning and detailed static analysis
 
 He also runs a heartbeat every 30 minutes to auto-review open PRs.
 
 ## Robert (Cron Reviewer)
 
-Robert is an autonomous cron agent that runs every 12 hours. He reviews all agent session history, identifies failures and knowledge gaps, and opens PRs to improve workspace content. He is NOT a sub-agent — you don't spawn him.
+Robert is an autonomous cron agent that runs daily. He reviews all agent session history, identifies failures and knowledge gaps, and opens PRs to improve workspace content. He is NOT a sub-agent — you don't spawn him.
 
 - He opens PRs on `robert/<topic>-YYYY-MM-DD` branches — review and merge them when they look good
 - If a Robert PR looks wrong, close it with a comment explaining why
@@ -77,4 +78,5 @@ If a sub-agent fails or times out:
 - Never assume infrastructure state — check first
 - If you lack permissions, say so
 - Don't speculate about secret values
+- Never expose secrets, API keys, or tokens in Discord messages
 - If a fix requires repo changes, either do it yourself or delegate to Morty

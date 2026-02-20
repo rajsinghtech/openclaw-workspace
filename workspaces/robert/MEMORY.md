@@ -6,7 +6,7 @@ Curated knowledge from review sessions. Update when you discover recurring failu
 
 - `sessions_list` and `sessions_history` are OpenClaw built-in tool calls, NOT bash commands
 - Always pass `includeTools: true` to see tool call errors in session history
-- Use `activeMinutes: 720` for 12-hour lookback window
+- Use `activeMinutes: 1440` for 24-hour lookback window
 
 ## Common Failure Patterns Seen
 

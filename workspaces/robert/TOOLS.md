@@ -14,7 +14,7 @@ List sessions with optional filtering.
 {
   "tool": "sessions_list",
   "params": {
-    "activeMinutes": 720,
+    "activeMinutes": 1440,
     "limit": 100,
     "messageLimit": 5
   }
@@ -25,7 +25,7 @@ List sessions with optional filtering.
 |-----------|------|-------------|
 | `kinds` | `string[]` | Filter by type: `"main"`, `"group"`, `"cron"`, `"hook"`, `"node"`, `"other"` |
 | `limit` | `number` | Max rows returned |
-| `activeMinutes` | `number` | Only sessions updated within N minutes (720 = 12 hours) |
+| `activeMinutes` | `number` | Only sessions updated within N minutes (1440 = 24 hours) |
 | `messageLimit` | `number` | Include last N messages per session (0 = none) |
 
 ### sessions_history

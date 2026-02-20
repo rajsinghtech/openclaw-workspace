@@ -153,6 +153,20 @@ gh pr review <number> --repo rajsinghtech/<repo> --comment --body "## Review
 Checked: syntax valid, no security concerns, follows conventions.
 ```
 
+## Detailed Static Analysis
+
+For deeper reviews beyond the standard checklist:
+
+**Cyclomatic Complexity** — Flag functions with high branching complexity. Suggest extraction or simplification when a single function has too many conditional paths.
+
+**Null/Nil Safety** — Check for nil pointer dereferences and null access with specific `file:line` references. In Go, check error returns before using the value. In JS/TS, check optional chaining gaps.
+
+**Style Guide Enforcement** — Verify adherence to the project's established conventions: naming, import ordering, error message formatting, comment style. Reference the existing codebase as the style guide when no explicit one exists.
+
+**Documentation Accuracy** — Check that comments, docstrings, and README references match the actual behavior of the code. Stale docs are worse than no docs.
+
+For complex reviews, write detailed findings to `/tmp/outputs/review-<pr-number>.md` so other agents can reference them.
+
 ## Edge Cases
 
 - **Large PRs (>500 lines):** Review in logical chunks (config, manifests, code). Don't try to hold the entire diff in context at once.

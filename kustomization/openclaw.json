@@ -12,8 +12,7 @@
       "token": "${DEFAULT_PASSWORD}"
     },
     "controlUi": {
-      "enabled": true,
-      "allowInsecureAuth": true
+      "enabled": true
     }
   },
   "models": {
@@ -51,10 +50,15 @@
         "maxConcurrent": 16
       },
       "compaction": {
+        "contextTokens": 80000,
         "memoryFlush": {
           "enabled": true,
           "softThresholdTokens": 4000
         }
+      },
+      "bootstrap": {
+        "maxChars": 10000,
+        "totalMaxChars": 75000
       },
       "memorySearch": {
         "enabled": true,
@@ -84,8 +88,7 @@
             "morty",
             "dyson",
             "robert",
-            "leon",
-            "ribak"
+            "leon"
           ]
         },
         "heartbeat": {
@@ -133,7 +136,7 @@
           ]
         },
         "heartbeat": {
-          "every": "15m",
+          "every": "30m",
           "model": "aperture/MiniMax-M2.5",
           "target": "discord",
           "activeHours": {
@@ -171,24 +174,7 @@
         },
         "subagents": {
           "allowAgents": [
-            "main",
-            "ribak"
-          ]
-        }
-      },
-      {
-        "id": "ribak",
-        "identity": {
-          "name": "Ribak",
-          "emoji": "📋"
-        },
-        "workspace": "/home/node/.openclaw/workspaces/ribak",
-        "model": {
-          "primary": "aperture/MiniMax-M2.5"
-        },
-        "subagents": {
-          "allowAgents": [
-            "leon"
+            "main"
           ]
         }
       }

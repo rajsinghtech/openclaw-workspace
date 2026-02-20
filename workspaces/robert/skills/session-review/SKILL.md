@@ -25,7 +25,7 @@ requires: []
 ## Routing
 
 ### Use This Skill When
-- Running a periodic session review (every 12h cron)
+- Running a periodic session review (daily cron)
 - Investigating why an agent struggled with a task
 - Looking for recurring failure patterns across agents
 - Identifying stale docs or missing skills from real usage
@@ -46,10 +46,10 @@ Use the built-in `sessions_list` and `sessions_history` tools (OpenClaw tool cal
 ### List recent sessions
 
 ```json
-{ "tool": "sessions_list", "params": { "activeMinutes": 720, "limit": 100, "messageLimit": 5 } }
+{ "tool": "sessions_list", "params": { "activeMinutes": 1440, "limit": 100, "messageLimit": 5 } }
 ```
 
-- `activeMinutes: 720` = last 12 hours
+- `activeMinutes: 1440` = last 24 hours
 - `messageLimit: 5` = include last 5 messages per session for quick triage
 - Use `kinds` to filter: `["main", "group", "cron", "hook"]`
 

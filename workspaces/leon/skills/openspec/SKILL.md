@@ -2,19 +2,18 @@
 name: OpenSpec Workflow
 description: >
   Spec-driven development workflow — proposals, requirements, design docs,
-  task breakdowns, and handoff patterns using the OpenSpec framework.
+  task breakdowns, and implementation using the OpenSpec framework.
 
   Use when: Starting a new feature or change that needs planning, someone
   says "I want to build X", creating proposals or specs, breaking down
-  requirements into tasks, or handing off from planning to implementation.
+  requirements into tasks, or transitioning from planning to implementation.
 
-  Don't use when: Implementing code changes (hand off to Leon). Don't use
-  for debugging or troubleshooting (use appropriate troubleshooting skill).
+  Don't use when: Debugging or troubleshooting (use appropriate troubleshooting skill).
   Don't use for Kubernetes manifest changes (use pr-workflow). Don't use
   for reviewing existing code (use code-review).
 
   Outputs: OpenSpec change folder with proposal.md, specs/, design.md,
-  and tasks.md. Handoff artifact for implementation agent.
+  and tasks.md. Implementation follows directly from tasks.md.
 requires: []
 ---
 
@@ -29,26 +28,25 @@ Document templates and workflow patterns for spec-driven development.
 - Someone says "I want to build X" or "let's add Y"
 - Creating proposals, requirements, or design documents
 - Breaking down a feature into implementable tasks
-- Handing off planned work to Leon for implementation
+- Transitioning from planning to implementation
 - Running `/opsx:new`, `/opsx:ff`, `/opsx:apply`, or `/opsx:archive`
 
 ### Don't Use This Skill When
-- Implementing the actual code → hand off to **Leon**
-- Debugging a runtime issue → use the appropriate troubleshooting skill
-- Changing Kubernetes manifests → use **pr-workflow** (dyson)
-- Reviewing a PR → use **code-review** (leon)
-- The task is small enough to just do without a spec → skip planning
+- Debugging a runtime issue -> use the appropriate troubleshooting skill
+- Changing Kubernetes manifests -> use **pr-workflow** (dyson)
+- Reviewing a PR -> use **code-review**
+- The task is small enough to just do without a spec -> skip planning
 
 ## Philosophy
 
 OpenSpec is built on these principles:
 
 ```text
-→ fluid not rigid
-→ iterative not waterfall
-→ easy not complex
-→ built for brownfield not just greenfield
-→ scalable from personal projects to enterprises
+> fluid not rigid
+> iterative not waterfall
+> easy not complex
+> built for brownfield not just greenfield
+> scalable from personal projects to enterprises
 ```
 
 Key insight: **Actions, not phases.** Commands are things you can do, not stages you're stuck in.
@@ -86,9 +84,9 @@ Generates all planning documents in sequence:
 
 ### /opsx:apply
 
-Signals ready for implementation. Ribak's job is done; Leon takes over.
+Signals ready for implementation. Planning is complete; proceed with implementation from `tasks.md`.
 
-**Handoff includes:**
+**Context available:**
 - Path to `tasks.md`
 - Path to `specs/` for reference
 - Path to `design.md` for technical context
@@ -106,7 +104,7 @@ openspec/changes/archive/YYYY-MM-DD-<change-name>/
 
 Updates any merged specs in the main documentation.
 
-**When to use:** Leon has completed implementation and change is merged.
+**When to use:** Implementation is complete and change is merged.
 
 ## Document Templates
 
@@ -268,7 +266,7 @@ If this changes existing behavior:
 ## Task Group 1: <Descriptive Name>
 
 - [ ] 1.1 Task description
-  - Notes: context for Leon
+  - Notes: implementation context
   - Files: relevant files to modify
   - Tests: what to verify
 
@@ -303,20 +301,20 @@ Apply to planning documents:
 - `specs/` = declarative desired state (what the system should do)
 - `tasks.md` = workflow orchestration (steps to get there)
 - `design.md` = state reconciliation model (how we track progress)
-- Handoff design = pluggable implementation (Leon can vary approach)
+- Implementation approach can vary based on context
 
 ## Working with Raj
 
 **Typical flow:**
 
 1. Raj says: "I want to add dark mode"
-2. Ribak asks: "Scope questions..."
-3. Ribak runs: `/opsx:new add-dark-mode`
-4. Ribak runs: `/opsx:ff` → generates all docs
+2. Leon asks: "Scope questions..."
+3. Leon runs: `/opsx:new add-dark-mode`
+4. Leon runs: `/opsx:ff` -> generates all docs
 5. Raj reviews and approves
-6. Ribak signals: `/opsx:apply` → spawns Leon
+6. Leon runs: `/opsx:apply` -> proceeds with implementation
 7. Leon implements from `tasks.md`
-8. Leon signals: `/opsx:archive`
+8. Leon runs: `/opsx:archive` when complete
 
 **Brownfield considerations:**
 
@@ -331,16 +329,13 @@ Apply to planning documents:
 |---------|-----------------|-------------|
 | `/opsx:new` | Change folder structure | proposal pending |
 | `/opsx:ff` | proposal, specs, design, tasks | ready for implementation |
-| `/opsx:apply`* | Hands off to Leon | in progress |
-| `/opsx:archive`* | Archive folder | complete |
-
-*Ribak manages the handoff, actual spawn/archiving is done via main agent returning from sub-agent.
+| `/opsx:apply` | Transitions to implementation | in progress |
+| `/opsx:archive` | Archive folder | complete |
 
 ## Edge Cases
 
 - **Scope creep during planning:** If requirements keep expanding, pause and re-scope with Raj before continuing
 - **Brownfield conflicts:** If the proposed design conflicts with existing architecture, document the conflict in design.md and flag it
-- **Handoff to Leon fails:** If Leon can't be spawned, write the handoff artifact to `/tmp/outputs/openspec-handoff.md` and report back
 - **Multiple concurrent changes:** Each change gets its own folder — don't mix changes in the same spec
 
 ## Compaction Notes
