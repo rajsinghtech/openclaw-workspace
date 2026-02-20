@@ -4,7 +4,8 @@
     "mode": "local",
     "bind": "lan",
     "auth": {
-      "mode": "none"
+      "mode": "token",
+      "allowTailscale": true
     },
     "controlUi": {
       "enabled": true,
