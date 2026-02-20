@@ -2,14 +2,10 @@
   "gateway": {
     "port": 18789,
     "mode": "local",
-    "bind": "tailnet",
+    "bind": "lan",
     "auth": {
       "mode": "token",
-      "token": "${DEFAULT_PASSWORD}",
-      "allowTailscale": true
-    },
-    "tailscale": {
-      "mode": "serve"
+      "token": "${DEFAULT_PASSWORD}"
     },
     "controlUi": {
       "enabled": true,
