@@ -99,13 +99,13 @@ spec:
                 name: openclaw-secrets
           startupProbe:
             tcpSocket:
-              port: 18789
+              port: 18790  # WORKAROUND: probe nginx proxy (gateway is loopback-only), revert to 18789 when #19004 is fixed
             initialDelaySeconds: 5
             periodSeconds: 5
             failureThreshold: 12
           readinessProbe:
             tcpSocket:
-              port: 18789
+              port: 18790  # WORKAROUND: probe nginx proxy (gateway is loopback-only), revert to 18789 when #19004 is fixed
             initialDelaySeconds: 15
             periodSeconds: 10
             failureThreshold: 3
