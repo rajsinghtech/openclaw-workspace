@@ -59,16 +59,13 @@ jobs:
             echo "⚠ kustomize not installed, skipping build check"
           fi
 
-      - name: Check for Flux escaping issues
+      - name: Validate gateway config
         run: |
-          echo "=== Checking Flux escaping ==="
-          # Check that env vars use $$ escaping
-          if grep -E '\$\{[A-Z_]+\}' kustomization/openclaw.json | grep -v '\$\$\{' | grep -v '"_comment"'; then
-            echo "❌ Error: Found unescaped \${VAR} patterns. Use \$\${VAR} for Flux compatibility."
-            echo "   See kustomization/CONFIG.md for details."
-            exit 1
-          fi
-          echo "✓ No unescaped variable references found"
+          echo "=== Validating gateway config ==="
+          chmod +x scripts/validate-config.sh
+          for f in kustomization/*.json; do
+            scripts/validate-config.sh "$f" || exit 1
+          done
 
       - name: Check workspace references
         run: |
