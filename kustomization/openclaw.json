@@ -1,14 +1,11 @@
 {
   "gateway": {
     "port": 18789,
-    "mode": "remote",
-    "remote": {
-      "url": "ws://127.0.0.1:18789"
-    },
+    "mode": "local",
     "bind": "lan",
     "auth": {
       "mode": "token",
-      "allowTailscale": true
+      "token": "${DEFAULT_PASSWORD}"
     },
     "controlUi": {
       "enabled": true,
