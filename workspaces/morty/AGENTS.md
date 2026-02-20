@@ -11,6 +11,18 @@ You are a sub-agent spawned by the main OpenClaw agent. Your job is to audit and
 | **Leon** | `leon` | Coding expert — code review, debugging, architecture | MiniMax M2.5 |
 | **Robert** | `robert` | Cron reviewer — reads sessions, opens PRs (daily) | MiniMax M2.5 |
 
+## Workspace Files
+
+| File | Purpose |
+|------|---------|
+| `AGENTS.md` | Agent instructions and repository structure |
+| `TOOLS.md` | CLI tool reference and cross-cluster shortcuts |
+| `SOUL.md` | Persona, workflow, and self-modification patterns |
+| `EVENTS.md` | Event-driven alerting mechanisms |
+| `HEARTBEAT.md` | Time-based health checks (minimal) |
+| `MEMORY.md` | Operational knowledge from past audits |
+| `IDENTITY.md` | Agent identity and capabilities |
+
 ## Repository Structure
 
 ```
@@ -21,7 +33,7 @@ rajsinghtech/openclaw-workspace
 │   ├── deployment.yaml     # Pod spec: openclaw + tailscale + init containers
 │   ├── kustomization.yaml  # Kustomize root (resources, generators)
 │   ├── secret.sops.yaml    # SOPS-encrypted secrets (DO NOT EDIT)
-│   ├── kubeconfig.yaml     # Multi-cluster kubeconfig
+│   ├── kubeconfig.yaml     # Multi-cluster kubeconfig (ottawa, robbinsdale, stpetersburg)
 │   ├── pvc.yaml            # 5Gi Ceph RBD PVC
 │   └── *.yaml              # Service, HTTPRoute, RBAC, egress, pull-secret, ts-oauth
 ├── workspaces/
@@ -29,6 +41,8 @@ rajsinghtech/openclaw-workspace
 │   │   ├── AGENTS.md, TOOLS.md, SOUL.md, IDENTITY.md, HEARTBEAT.md
 │   │   └── skills/         # flux-debugging, pod-troubleshooting, gitops-deploy, etc.
 │   ├── morty/              # Your workspace (this directory)
+│   │   ├── AGENTS.md, TOOLS.md, SOUL.md, EVENTS.md, HEARTBEAT.md, MEMORY.md
+│   │   └── skills/
 │   ├── dyson/              # Multi-cluster manager workspace
 │   ├── leon/               # Coding expert workspace
 │   └── robert/             # Cron reviewer workspace
@@ -36,6 +50,46 @@ rajsinghtech/openclaw-workspace
 ├── Dockerfile.workspace    # Scratch image for workspace content
 └── .github/workflows/      # CI: build-openclaw.yaml, build-workspace.yaml, restart-openclaw.yaml
 ```
+
+## Three Focus Areas
+
+### 1. Cross-Cluster Ergonomics
+
+Use the multi-cluster kubeconfig for operations across ottawa, robbinsdale, and stpetersburg:
+
+```bash
+# Switch context
+kubectl config use-context ottawa
+
+# Query all clusters
+for ctx in ottawa robbinsdale stpetersburg; do
+  kubectl --context=$ctx get pods -n openclaw
+done
+```
+
+See `TOOLS.md` for full cross-cluster shortcuts.
+
+### 2. Event-Driven Alerting
+
+Don't rely solely on time-based heartbeats. Watch for specific conditions:
+
+- Pod crashes, OOMKilled, ImagePullBackOff
+- Flux reconciliation failures
+- Warning events in the last 15-30 minutes
+- Pods not in Ready state
+
+See `EVENTS.md` for alert conditions and watch scripts.
+
+### 3. Self-Modification
+
+You can propose and push improvements to your own config:
+
+- Add new validation patterns to MEMORY.md
+- Enhance TOOLS.md with new shortcuts
+- Document new alert conditions in EVENTS.md
+- Fix skill references
+
+See `SOUL.md` for the self-modification workflow.
 
 ## Containers in the Pod
 
