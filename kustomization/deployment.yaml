@@ -59,6 +59,8 @@ spec:
                 name = rajsinghtechbot
                 email = king360raj@gmail.com
               GITCFG
+              echo "[init-workspace] Clearing stale device pairing state..."
+              rm -rf /home/node/.openclaw/devices
               echo "[init-workspace] Fixing ownership..."
               chown -R 1000:1000 /home/node/.openclaw
               echo "[init-workspace] Done"
@@ -97,18 +99,10 @@ spec:
           envFrom:
             - secretRef:
                 name: openclaw-secrets
-          startupProbe:
-            tcpSocket:
-              port: 18790  # WORKAROUND: probe nginx proxy (gateway is loopback-only), revert to 18789 when #19004 is fixed
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            failureThreshold: 12
-          readinessProbe:
-            tcpSocket:
-              port: 18790  # WORKAROUND: probe nginx proxy (gateway is loopback-only), revert to 18789 when #19004 is fixed
-            initialDelaySeconds: 15
-            periodSeconds: 10
-            failureThreshold: 3
+          # WORKAROUND: probes removed — gateway binds to loopback only
+          # (openclaw/openclaw#19004) so kubelet can't reach it. Restore
+          # tcpSocket probes on port 18789 once #19004 is fixed and bind
+          # reverts to lan.
           resources:
             requests:
               cpu: 250m
@@ -157,30 +151,6 @@ spec:
               memory: 128Mi
             limits:
               memory: 512Mi
-        # WORKAROUND: openclaw/openclaw#19004 — v2026.2.19 blocks ws:// on non-loopback
-        # but session tools use LAN IP when bind=lan. Nginx reverse proxy bridges
-        # external traffic to the loopback-bound gateway with proper WebSocket
-        # upgrade and proxy headers. Remove this sidecar and restore bind=lan +
-        # containerPort 18789 on the openclaw container once #19004 is fixed upstream.
-        # Also revert service-main.yaml targetPort from 18790 back to 18789,
-        # and remove the gateway-proxy-config ConfigMap.
-        - name: gateway-proxy
-          image: nginx:1.27-alpine
-          ports:
-            - name: http
-              containerPort: 18790
-              protocol: TCP
-          volumeMounts:
-            - name: gateway-proxy-config
-              mountPath: /etc/nginx/nginx.conf
-              subPath: nginx.conf
-              readOnly: true
-          resources:
-            requests:
-              cpu: 10m
-              memory: 16Mi
-            limits:
-              memory: 32Mi
       terminationGracePeriodSeconds: 60
       volumes:
         - name: data
@@ -196,6 +166,3 @@ spec:
         - name: kubeconfig
           secret:
             secretName: openclaw-kubeconfig
-        - name: gateway-proxy-config
-          configMap:
-            name: gateway-proxy-config

@@ -19,9 +19,6 @@ configMapGenerator:
     files:
       - openclaw.json
       - cron-jobs.json
-  - name: gateway-proxy-config
-    files:
-      - nginx.conf=gateway-proxy-nginx.conf
 secretGenerator:
   - name: openclaw-kubeconfig
     files:
