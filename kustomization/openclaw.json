@@ -12,7 +12,8 @@
       "token": "${DEFAULT_PASSWORD}"
     },
     "controlUi": {
-      "enabled": true
+      "enabled": true,
+      "allowInsecureAuth": true
     }
   },
   "models": {
