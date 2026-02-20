@@ -50,15 +50,10 @@
         "maxConcurrent": 16
       },
       "compaction": {
-        "contextTokens": 80000,
         "memoryFlush": {
           "enabled": true,
           "softThresholdTokens": 4000
         }
-      },
-      "bootstrap": {
-        "maxChars": 10000,
-        "totalMaxChars": 75000
       },
       "memorySearch": {
         "enabled": true,
