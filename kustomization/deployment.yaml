@@ -157,6 +157,11 @@ spec:
               memory: 128Mi
             limits:
               memory: 512Mi
+        # WORKAROUND: openclaw/openclaw#19004 — v2026.2.19 blocks ws:// on non-loopback
+        # but session tools use LAN IP when bind=lan. Socat bridges external traffic
+        # to the loopback-bound gateway. Remove this sidecar and restore bind=lan +
+        # containerPort 18789 on the openclaw container once #19004 is fixed upstream.
+        # Also revert service-main.yaml targetPort from 18790 back to 18789.
         - name: gateway-proxy
           image: alpine/socat:1.8.0.1
           args:

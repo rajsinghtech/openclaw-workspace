@@ -9,5 +9,5 @@ spec:
   ports:
     - name: http
       port: 18789
-      targetPort: 18790
+      targetPort: 18790  # WORKAROUND: routes to socat proxy, revert to 18789 when openclaw/openclaw#19004 is fixed
       protocol: TCP
