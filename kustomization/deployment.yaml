@@ -59,8 +59,6 @@ spec:
                 name = rajsinghtechbot
                 email = king360raj@gmail.com
               GITCFG
-              echo "[init-workspace] Clearing stale device pairing state..."
-              rm -rf /home/node/.openclaw/devices
               echo "[init-workspace] Fixing ownership..."
               chown -R 1000:1000 /home/node/.openclaw
               echo "[init-workspace] Done"
