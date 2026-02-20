@@ -80,3 +80,64 @@ If a sub-agent fails or times out:
 - Don't speculate about secret values
 - Never expose secrets, API keys, or tokens in Discord messages
 - If a fix requires repo changes, either do it yourself or delegate to Morty
+
+## Self-Modification Patterns
+
+The agent can propose and push improvements to its own configuration. This enables continuous improvement of workspace documentation, tooling, and operational patterns.
+
+### When to Self-Modify
+
+Propose config changes when you discover:
+- Repeated debugging steps that could be automated
+- Missing documentation for common operations
+- New cluster configurations or contexts
+- Skill improvements based on recent use
+- Correction of outdated patterns in MEMORY.md
+
+### Self-Modification Workflow
+
+1. **Identify the improvement** — Recognize a gap or inefficiency in current workspace
+2. **Draft the change** — Clone repo, modify the appropriate file (AGENTS.md, TOOLS.md, MEMORY.md, EVENTS.md, or skills/)
+3. **Validate** — Run validation commands (jq/yq on JSON/YAML, syntax checks)
+4. **Commit with descriptive message** — Use format: `feat: add <description>` or `fix: correct <description>`
+5. **Push and open PR** — Let Robert review or handle directly if urgent
+
+### Example Self-Modification
+
+```bash
+# Clone workspace
+git clone https://github.com/rajsinghtech/openclaw-workspace.git /tmp/self-mod
+cd /tmp/self-mod
+
+# Add new kubectl alias to TOOLS.md
+# (edit the file with your addition)
+
+# Validate changes
+jq . workspaces/main/*.json 2>/dev/null || true
+yq . workspaces/main/*.yaml 2>/dev/null || true
+
+# Commit and push
+git add workspaces/main/TOOLS.md
+git commit -m "feat: add kubectl cross-cluster aliases for ottawa, robbinsdale, stpetersburg"
+git push origin main
+
+# Optionally open a PR for visibility
+gh pr create --title "feat: add cross-cluster kubectl shortcuts" --body "Added cluster alias functions and cross-cluster operations to TOOLS.md"
+```
+
+### Files Safe to Modify
+
+| File | What to Add |
+|------|-------------|
+| `MEMORY.md` | New gotchas, operational patterns, corrections |
+| `TOOLS.md` | New aliases, shortcuts, validation commands |
+| `EVENTS.md` | New alert conditions, watch scripts |
+| `AGENTS.md` | Updates to agent roles or spawn patterns |
+| `skills/` | New diagnostic sequences, templates |
+
+### Constraints
+
+- Don't modify `secret.sops.yaml` — requires PGP key
+- Don't change container images without coordination
+- Don't modify Flux config without testing
+- Keep changes focused and atomic

@@ -45,6 +45,18 @@ Spawn sub-agents for tasks that may outlive the current session:
 
 Sub-agents run independently — the parent session can idle or timeout without killing them.
 
+## Workspace Files
+
+| File | Purpose |
+|------|---------|
+| `AGENTS.md` | Agent instructions and repository structure |
+| `TOOLS.md` | CLI tool reference and cross-cluster shortcuts |
+| `SOUL.md` | Persona, workflow, and self-modification patterns |
+| `EVENTS.md` | Event-driven alerting mechanisms |
+| `HEARTBEAT.md` | Time-based health checks |
+| `MEMORY.md` | Operational knowledge from past audits |
+| `IDENTITY.md` | Agent identity and capabilities |
+
 ## Guidelines
 
 - Always check real state before speculating. Run the command.

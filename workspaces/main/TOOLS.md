@@ -206,6 +206,85 @@ kubectl get pod -l app.kubernetes.io/name=openclaw -n openclaw -o json | jq '.it
 kubectl get events -n openclaw -o json | jq '.items | sort_by(.lastTimestamp) | .[-10:] | .[] | {type, reason, message, lastTimestamp}'
 ```
 
+## Cross-Cluster kubectl
+
+The workspace includes a multi-cluster kubeconfig at `kustomization/kubeconfig.yaml` with contexts for `ottawa`, `robbinsdale`, and `stpetersburg`.
+
+### Cluster Alias Functions
+
+Add these functions to your shell for quick cluster switching:
+
+```bash
+# Add to ~/.bashrc or run interactively
+alias kx-ottawa='kubectl config use-context ottawa'
+alias kx-robbinsdale='kubectl config use-context robbinsdale'
+alias kx-stpetersburg='kubectl config use-context stpetersburg'
+
+# List all cluster contexts
+alias kx-all='kubectl config get-contexts -o name'
+
+# Quick switch (kx <name>)
+kx() {
+  case "$1" in
+    ottawa|robbinsdale|stpetersburg) kubectl config use-context "$1" ;;
+    *) echo "Usage: kx {ottawa|robbinsdale|stpetersburg}" ;;
+  esac
+}
+```
+
+### Cross-Cluster Operations
+
+```bash
+# Export kubeconfig for all clusters
+export KUBECONFIG=/home/node/.openclaw/kubeconfig.yaml
+
+# Query all clusters at once
+for ctx in ottawa robbinsdale stpetersburg; do
+  echo "=== $ctx ==="
+  kubectl --context=$ctx get pods -n openclaw -o wide 2>/dev/null
+done
+
+# Get Flux status across all clusters
+for ctx in ottawa robbinsdale stpetersburg; do
+  echo "=== $ctx ==="
+  flux --context=$ctx get kustomization -A 2>/dev/null | grep -E "(NAME|openclaw)"
+done
+
+# Check warning events across all clusters
+for ctx in ottawa robbinsdale stpetersburg; do
+  echo "=== $ctx ==="
+  kubectl --context=$ctx get events -n openclaw --sort-by='.lastTimestamp' --field-selector type=Warning 2>/dev/null | tail -5
+done
+
+# Full cross-cluster audit script
+cross-cluster-audit() {
+  for ctx in ottawa robbinsdale stpetersburg; do
+    echo "=========================================="
+    echo "CLUSTER: $ctx"
+    echo "=========================================="
+    echo "--- Pods ---"
+    kubectl --context=$ctx get pods -n openclaw -o wide 2>/dev/null || echo "Cluster unreachable"
+    echo "--- Flux ---"
+    flux --context=$ctx get kustomization -A 2>/dev/null | grep openclaw || echo "Flux error"
+    echo "--- Recent Warnings ---"
+    kubectl --context=$ctx get events -n openclaw --sort-by='.lastTimestamp' --field-selector type=Warning 2>/dev/null | tail -3
+    echo ""
+  done
+}
+```
+
+### Applying to Remote Clusters
+
+```bash
+# Apply kustomization to a specific remote cluster
+kubectl --context=robbinsdale apply -k kustomization/
+kubectl --context=stpetersburg apply -k kustomization/
+
+# Use flux reconcile with context
+flux --context=robbinsdale reconcile kustomization openclaw --with-source
+flux --context=stpetersburg reconcile kustomization openclaw --with-source
+```
+
 ## Quick Health Check
 
 Run these in sequence to get a full picture of the deployment:
