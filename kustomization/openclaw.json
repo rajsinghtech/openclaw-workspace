@@ -5,7 +5,7 @@
     "bind": "lan",
     "auth": {
       "mode": "token",
-      "allowTailscale": true
+      "token": "${DEFAULT_PASSWORD}"
     },
     "controlUi": {
       "enabled": true,
