@@ -86,3 +86,31 @@ ALERT: critical - Pod crash detected - openclaw-xyz123 restarted 3 times in last
 ALERT: high - Flux reconciliation failed - openclaw kustomization stuck on revision abc123, error: "git repository not found"
 ALERT: medium - Warning events - 2 warning events in last 30min: FailedMount (openclaw ConfigMap)
 ```
+
+## External AlertManager Integration
+
+### Alert Message Format
+
+Alerts arrive in Discord with format: `[talos-{cluster}] [FIRING:N] {alertname} {message}`
+
+### Response Workflow
+
+1. **Parse** - Extract cluster from `[talos-xxx]`, alertname from message
+2. **Context** - Map `talos-{cluster}` to kubectl context (stpetersburg/robbinsdale/ottawa)
+3. **Diagnose** - Run cluster-specific kubectl commands based on alertname
+4. **Assess** - Determine if real issue vs config/scrape false alarm
+5. **Notify** - Ping @SRE role with formatted summary if actionable
+
+### Alert Notification Template
+
+```
+<@&1425670630560497766>
+
+**Alert:** `{alertname}` | **Cluster:** {cluster} | **Severity:** {severity}
+
+**Affected:** {instance/pod/node info from labels}
+
+**Assessment:** {real alert / false alarm} - {root cause if known}
+
+**Recommendation:** {action item or "n/a"}
+```

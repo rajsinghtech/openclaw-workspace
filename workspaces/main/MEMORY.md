@@ -28,6 +28,34 @@ Curated knowledge from past sessions. Update this file when you learn something 
 - Always `rm -rf` clone directories before `git clone` — stale clones from previous sessions cause wrong branch/state
 - Always `mkdir -p /tmp/outputs` before writing artifacts — the directory doesn't exist by default
 - Always use `--context <ctx>` with kubectl — never rely on current-context across clusters
+
+## Alert Handling
+
+### Cluster Label Parsing
+
+AlertManager messages include cluster in the message prefix: `[talos-{cluster}] [FIRING:N] {alertname} ...`
+
+Map to kubectl context:
+- `talos-stpetersburg` → `stpetersburg`
+- `talos-robbinsdale` → `robbinsdale`
+- `talos-ottawa` → `ottawa`
+
+### Alert Response Pattern
+
+1. Parse cluster from `[talos-xxx]` prefix
+2. Map to kubectl context
+3. Run diagnostic based on alertname
+4. Assess: real issue vs false alarm (config/scrape issue)
+5. Ping @SRE role with summary if actionable
+
+### Common Alert -> Action Mapping
+
+| Alert | Diagnostic | Common Cause |
+|-------|-------------|--------------|
+| PrometheusTargetDown | Check endpoints/serviceMonitor config | Stale static IPs in prometheus config |
+| SmartDeviceHighTemperature | Check smartctl-exporter, node hardware | Real temp issue or sensor |
+| PodCrashLoopBackOff | `kubectl describe pod`, check logs | App error, OOM, liveness probe |
+| FluxReconcileFailure | `flux get kustomization`, check events | Git repo issue, SOPS decrypt fail |
 - After `kubectl rollout restart`, wait for `rollout status` to complete before checking logs (10-30s)
 - If `git push` fails with 403, verify GITHUB_TOKEN is set and has push access to the target repo
 - `sessions_list` and `sessions_history` are OpenClaw built-in tool calls, NOT shell commands
