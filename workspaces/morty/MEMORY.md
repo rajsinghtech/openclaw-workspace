@@ -46,3 +46,41 @@ Curated knowledge from past audit sessions. Update when you discover new pattern
 - Templates and examples inside skills are free when the skill isn't invoked
 - Design for compaction: write findings to `/tmp/outputs/` as you go
 - Standard artifact path: `/tmp/outputs/<task>.md`
+
+## Alert Handling
+
+### Cluster Label Key
+
+**Use `cluster` label** for routing alerts to the correct kubectl context. This is the standard label from AlertManager for multi-cluster setups.
+
+### Multi-Cluster Context Selection
+
+Pattern: **when alert arrives → parse `cluster` label → use appropriate kubectl context**
+
+```bash
+# Extract cluster from alert (e.g., alert has labels: cluster=ottawa, alertname=PodCrashLoopBackOff)
+CLUSTER_LABEL=$(echo "$ALERT_JSON" | jq -r '.labels.cluster')
+
+# Use the cluster label to select kubectl context
+kubectl config use-context $CLUSTER_LABEL
+
+# Run diagnostics on the correct cluster
+kubectl --context=$CLUSTER_LABEL get pods -n openclaw
+flux --context=$CLUSTER_LABEL get kustomization -A
+```
+
+### Available Cluster Contexts
+
+The workspace kubeconfig includes these contexts:
+- `ottawa` - Primary cluster
+- `robbinsdale` - Secondary cluster  
+- `stpetersburg` - Tertiary cluster
+
+### Alert Routing Flow
+
+1. **Receive alert** → Parse JSON payload from AlertManager
+2. **Extract cluster** → `cluster=$(echo $alert | jq -r '.labels.cluster')`
+3. **Validate context** → `kubectl config get-contexts $cluster`
+4. **Switch context** → `kubectl config use-context $cluster`
+5. **Run diagnostics** → Use the alert-type-specific commands from EVENTS.md
+6. **Report findings** → Send to Discord with cluster context noted
