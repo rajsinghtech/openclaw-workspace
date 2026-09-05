@@ -1,14 +1,14 @@
 # syntax=docker/dockerfile:1
 
 # Tool versions — bump these to update (or use Renovate)
-ARG KUBECTL_V=v1.35.1
-ARG FLUX_V=v2.7.5
-ARG HELM_V=v4.1.1
+ARG KUBECTL_V=v1.37.0
+ARG FLUX_V=v2.9.5
+ARG HELM_V=v4.2.4
 ARG KUSTOMIZE_V=v5.8.1
-ARG YQ_V=v4.52.4
-ARG SOPS_V=v3.11.0
+ARG YQ_V=v4.53.6
+ARG SOPS_V=v3.13.3
 ARG JQ_V=jq-1.8.1
-ARG GH_V=2.87.0
+ARG GH_V=2.100.0
 ARG GOGCLI_V=0.9.0
 
 # Stage 1: download tools (each RUN = cached layer)
@@ -59,7 +59,7 @@ RUN curl -fsSL --retry 5 --retry-delay 2 \
     | tar xz gog
 
 # Stage 2: final image
-FROM ghcr.io/openclaw/openclaw:2026.2.19
+FROM ghcr.io/openclaw/openclaw:2026.9.2
 
 USER root
 COPY --from=tools /tools/ /usr/local/bin/
